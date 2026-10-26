@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#05060c">
+  <meta name="description" content="TEXTSHOW 手机荧光字牌：演唱会应援、车辆故障警示。支持发光字、走马灯、背景频闪、摄像头闪光灯频闪与警示音。">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="TEXTSHOW">
+  <title>TEXTSHOW · 荧光字牌</title>
+  <link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <main class="stage" id="stage">
+    <div class="stage-bg" id="stageBg"></div>
+    <div class="stage-vignette"></div>
+
+    <div class="stage-status" id="stageStatus">
+      <span class="live-pill"><i></i>LIVE</span>
+      <span class="status-pill" id="torchPill" hidden>闪光灯</span>
+      <span class="status-pill" id="soundPill" hidden>警示音</span>
+    </div>
+
+    <button class="stage-cta" id="openPanel" type="button" aria-controls="panel" aria-expanded="true">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M4 7h16M4 12h16M4 17h16"></path>
+        <circle cx="9" cy="7" r="2" fill="#05060c"></circle>
+        <circle cx="15" cy="12" r="2" fill="#05060c"></circle>
+        <circle cx="8" cy="17" r="2" fill="#05060c"></circle>
+      </svg>
+      <span>控制</span>
+    </button>
+
+    <div class="marquee" id="marquee">
+      <div class="marquee-track" id="marqueeTrack">
+        <span class="display-text" id="displayText">TEXTSHOW</span>
+        <span class="display-text" id="displayTextClone" aria-hidden="true">TEXTSHOW</span>
+      </div>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </main>
+
+  <div class="panel-backdrop show" id="panelBackdrop"></div>
+
+  <aside class="panel open" id="panel" aria-hidden="false" aria-label="控制面板">
+    <div class="panel-handle" aria-hidden="true"></div>
+
+    <header class="panel-head">
+      <div class="brand">
+        <span class="brand-mark">T</span>
+        <div class="brand-text">
+          <strong>TEXTSHOW</strong>
+          <small>演唱会 · 紧急警示 荧光字牌</small>
+        </div>
+      </div>
+      <button class="icon-btn" id="panelClose" type="button" aria-label="收起控制面板">×</button>
+    </header>
+
+    <div class="panel-body">
+      <div class="preset-row" id="presetRow">
+        <button class="preset" type="button" data-preset="concert" style="--dot:#ff2d95">
+          <span class="preset-dot"></span>演唱会
+        </button>
+        <button class="preset" type="button" data-preset="emergency" style="--dot:#ff3b30">
+          <span class="preset-dot"></span>车辆故障
+        </button>
+        <button class="preset" type="button" data-preset="clean" style="--dot:#4cc9f0">
+          <span class="preset-dot"></span>纯净字幕
+        </button>
+      </div>
+
+      <section class="field-group">
+        <div class="group-head">
+          <span class="idx">01</span>
+          <h2>文字内容</h2>
+        </div>
+        <textarea id="textInput" class="text-input" rows="2" maxlength="120" placeholder="输入要显示的文字…" aria-label="显示文字">TEXTSHOW</textarea>
+        <div class="chips" id="phraseChips">
+          <button type="button" data-phrase="一起唱！">一起唱！</button>
+          <button type="button" data-phrase="ENCORE">ENCORE</button>
+          <button type="button" data-phrase="车辆故障 请绕行">车辆故障 请绕行</button>
+          <button type="button" data-phrase="需要帮助">需要帮助</button>
+        </div>
+
+        <div class="row"><span class="row-label">字体</span></div>
+        <div class="seg seg-font" id="fontSeg">
+          <button type="button" class="seg-btn is-active" data-font="heavy">冲击</button>
+          <button type="button" class="seg-btn" data-font="sans">黑体</button>
+          <button type="button" class="seg-btn" data-font="serif">宋体</button>
+          <button type="button" class="seg-btn" data-font="mono">LED</button>
+          <button type="button" class="seg-btn" data-font="round">圆体</button>
+        </div>
+
+        <div class="row"><span class="row-label">字号</span><output id="sizeOut" for="sizeRange">20</output></div>
+        <input class="range" id="sizeRange" type="range" min="6" max="40" step="1" value="20" aria-label="字号">
+        <p class="hint">字号为上限值，长文本或竖屏会自动缩小以完整显示。</p>
+
+        <div class="row"><span class="row-label">文字颜色</span></div>
+        <div class="color-row">
+          <div class="swatches" id="textSwatches">
+            <button type="button" class="swatch is-active" data-color="#ffffff" style="--sw:#ffffff" aria-label="白色"></button>
+            <button type="button" class="swatch" data-color="#ff2d95" style="--sw:#ff2d95" aria-label="霓虹粉"></button>
+            <button type="button" class="swatch" data-color="#4cc9f0" style="--sw:#4cc9f0" aria-label="电光蓝"></button>
+            <button type="button" class="swatch" data-color="#ffd166" style="--sw:#ffd166" aria-label="警示黄"></button>
+            <button type="button" class="swatch" data-color="#ff3b30" style="--sw:#ff3b30" aria-label="警示红"></button>
+            <button type="button" class="swatch" data-color="#7cff6b" style="--sw:#7cff6b" aria-label="荧光绿"></button>
+          </div>
+          <label class="color-picker">
+            <input type="color" id="textColor" value="#ffffff" aria-label="自定义文字颜色">
+            <span>自定义</span>
+          </label>
+        </div>
+      </section>
+
+      <section class="field-group">
+        <div class="group-head">
+          <span class="idx">02</span>
+          <h2>文字特效</h2>
+        </div>
+
+        <label class="switch-row">
+          <span class="switch-label">
+            <span class="switch-name">霓虹发光</span>
+            <span class="switch-desc">文字外圈多级光晕</span>
+          </span>
+          <input type="checkbox" id="fxGlow" checked>
+          <span class="switch-ui" aria-hidden="true"></span>
+        </label>
+
+        <label class="switch-row">
+          <span class="switch-label">
+            <span class="switch-name">文字闪光</span>
+            <span class="switch-desc">文字忽明忽暗</span>
+          </span>
+          <input type="checkbox" id="fxFlash">
+          <span class="switch-ui" aria-hidden="true"></span>
+        </label>
+
+        <label class="switch-row">
+          <span class="switch-label">
+            <span class="switch-name">跳动字体</span>
+            <span class="switch-desc">文字上下弹跳</span>
+          </span>
+          <input type="checkbox" id="fxBounce" checked>
+          <span class="switch-ui" aria-hidden="true"></span>
+        </label>
+
+        <label class="switch-row">
+          <span class="switch-label">
+            <span class="switch-name">走马灯</span>
+            <span class="switch-desc">文字横向循环滚动</span>
+          </span>
+          <input type="checkbox" id="fxMarquee" checked>
+          <span class="switch-ui" aria-hidden="true"></span>
+        </label>
+
+        <label class="switch-row">
+          <span class="switch-label">
+            <span class="switch-name">彩虹渐变</span>
+            <span class="switch-desc">彩色流光填充文字</span>
+          </span>
+          <input type="checkbox" id="fxRainbow">
+          <span class="switch-ui" aria-hidden="true"></span>
+        </label>
+
+        <div class="row"><span class="row-label">动画速度</span><output id="speedOut" for="speedRange">1.0×</output></div>
+        <input class="range" id="speedRange" type="range" min="0.3" max="3" step="0.1" value="1" aria-label="动画速度">
+      </section>
+
+      <section class="field-group">
+        <div class="group-head">
+          <span class="idx">03</span>
+          <h2>背景闪光</h2>
+        </div>
+
+        <label class="switch-row">
+          <span class="switch-label">
+            <span class="switch-name">背景频闪</span>
+            <span class="switch-desc">整屏在背景色与闪光色之间切换</span>
+          </span>
+          <input type="checkbox" id="bgFlash">
+          <span class="switch-ui" aria-hidden="true"></span>
+        </label>
+
+        <div class="row"><span class="row-label">颜色</span></div>
+        <div class="color-row">
+          <label class="color-picker">
+            <input type="color" id="bgColor" value="#05060c" aria-label="背景颜色">
+            <span>背景</span>
+          </label>
+          <label class="color-picker">
+            <input type="color" id="flashColor" value="#ff2d95" aria-label="闪光颜色">
+            <span>闪光</span>
+          </label>
+        </div>
+
+        <div class="row"><span class="row-label">频闪频率</span><output id="bgHzOut" for="bgHzRange">4.0 Hz</output></div>
+        <input class="range" id="bgHzRange" type="range" min="0.5" max="12" step="0.5" value="4" aria-label="背景频闪频率">
+        <p class="hint">Hz 指每秒完整明暗循环次数。3–30 Hz 频闪可能诱发光敏性癫痫，请谨慎使用并避免直射眼睛。</p>
+      </section>
+
+      <section class="field-group">
+        <div class="group-head">
+          <span class="idx">04</span>
+          <h2>摄像头闪光灯</h2>
+        </div>
+
+        <label class="switch-row">
+          <span class="switch-label">
+            <span class="switch-name">手电筒频闪</span>
+            <span class="switch-desc">调用后置镜头的 LED 灯珠</span>
+          </span>
+          <input type="checkbox" id="torchSwitch">
+          <span class="switch-ui" aria-hidden="true"></span>
+        </label>
+
+        <div class="row"><span class="row-label">闪光频率</span><output id="torchHzOut" for="torchHzRange">8.0 Hz</output></div>
+        <input class="range" id="torchHzRange" type="range" min="0.5" max="20" step="0.5" value="8" aria-label="闪光灯频闪频率">
+        <p class="hint" id="torchHint">首次开启会请求摄像头权限，画面不会显示也不会录制。需 Android Chrome / Edge 等支持；iOS Safari 暂不支持网页控制手电筒，请使用系统手电筒。高频受灯珠硬件限制。</p>
+      </section>
+
+      <section class="field-group">
+        <div class="group-head">
+          <span class="idx">05</span>
+          <h2>警示音</h2>
+        </div>
+
+        <label class="switch-row">
+          <span class="switch-label">
+            <span class="switch-name">声音警示</span>
+            <span class="switch-desc">由手机扬声器发出高调警示音</span>
+          </span>
+          <input type="checkbox" id="soundSwitch">
+          <span class="switch-ui" aria-hidden="true"></span>
+        </label>
+
+        <div class="seg seg-sound" id="soundSeg">
+          <button type="button" class="seg-btn is-active" data-sound="alarm">高频警报</button>
+          <button type="button" class="seg-btn" data-sound="siren">警笛</button>
+          <button type="button" class="seg-btn" data-sound="urgent">急促哔声</button>
+          <button type="button" class="seg-btn" data-sound="steady">持续鸣响</button>
+        </div>
+
+        <div class="row"><span class="row-label">音量</span><output id="volumeOut" for="volumeRange">40</output></div>
+        <input class="range" id="volumeRange" type="range" min="0" max="100" step="1" value="40" aria-label="警示音音量">
+        <p class="hint">请遵守当地噪声与鸣笛法规，勿在禁鸣区域使用；长时间高音量可能损伤听力，建议短时使用。</p>
+      </section>
+
+      <p class="foot-note">轻触屏幕可重新打开控制面板。闪光与高音存在健康风险，请远离婴幼儿、孕妇及光敏人群。</p>
+    </div>
+
+    <footer class="panel-foot">
+      <button class="primary-btn" id="startShow" type="button">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg>
+        <span>开始演出</span>
+      </button>
+    </footer>
+  </aside>
+
+  <video id="torchVideo" playsinline muted aria-hidden="true"></video>
+
+  <script src="js/app.js" defer></script>
+</body>
+</html>
