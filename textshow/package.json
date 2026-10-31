@@ -1,0 +1,17 @@
+{
+  "name": "textshow",
+  "version": "1.0.0",
+  "description": "TEXTSHOW 手机荧光字牌：演唱会应援、车辆故障警示",
+  "main": "index.html",
+  "scripts": {
+    "android:init": "npx cap add android && npx cap sync android",
+    "android:sync": "npx cap sync android",
+    "android:build": "cd android && ./gradlew assembleRelease",
+    "android:apk": "cd android && ./gradlew assembleDebug"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.6.0",
+    "@capacitor/cli": "^8.6.0",
+    "@capacitor/core": "^8.6.0"
+  }
+}

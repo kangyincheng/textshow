@@ -1,0 +1,23 @@
+{
+  "appId": "com.textshow.app",
+  "appName": "TEXTSHOW",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "StatusBar": {
+      "style": "DARK",
+      "overlaysWebView": false,
+      "backgroundColor": "#05060c"
+    },
+    "SplashScreen": {
+      "launchShowDuration": 1500,
+      "backgroundColor": "#05060c",
+      "showSpinner": false
+    }
+  },
+  "android": {
+    "backgroundColor": "#05060c"
+  }
+}
