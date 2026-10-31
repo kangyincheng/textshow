@@ -13,4 +13,13 @@ ext {
     androidxJunitVersion = '1.3.0'
     androidxEspressoCoreVersion = '3.7.0'
     cordovaAndroidVersion = '14.0.1'
+
+    // ---------- Release signing ----------
+    // Defaults for local/dev builds. For production, override via ~/.gradle/gradle.properties
+    // with keys like: TEXT_SHOW_KEYSTORE_PASSWORD, TEXT_SHOW_KEY_PASSWORD
+    releaseKeystorePath = 'textshow-release.keystore'
+    releaseKeyAlias = 'textshow'
+    // Try to read from gradle.properties first, fall back to inline defaults
+    releaseKeystorePassword = project.findProperty('TEXT_SHOW_KEYSTORE_PASSWORD') ?: 'textshow123'
+    releaseKeyPassword = project.findProperty('TEXT_SHOW_KEY_PASSWORD') ?: 'textshow123'
 }

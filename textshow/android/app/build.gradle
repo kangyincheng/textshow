@@ -3,6 +3,17 @@ apply plugin: 'com.android.application'
 android {
     namespace = "com.textshow.app"
     compileSdk = rootProject.ext.compileSdkVersion
+
+    signingConfigs {
+        release {
+            // Path relative to android/app/
+            storeFile file(rootProject.ext.releaseKeystorePath)
+            storePassword rootProject.ext.releaseKeystorePassword
+            keyAlias rootProject.ext.releaseKeyAlias
+            keyPassword rootProject.ext.releaseKeyPassword
+        }
+    }
+
     defaultConfig {
         applicationId "com.textshow.app"
         minSdkVersion rootProject.ext.minSdkVersion
@@ -18,8 +29,14 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            // debug uses default debug keystore; explicitly disable release signing here
+            signingConfig null
         }
     }
 }
