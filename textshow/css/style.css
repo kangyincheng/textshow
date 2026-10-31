@@ -90,10 +90,10 @@ body {
   z-index: -1;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  /* grid gap 作为三格之间天然的 1px 黑分隔 */
   gap: 1px;
   background: #000;
   opacity: 0;
-  transform: scale(1.04);
   pointer-events: none;
   transition: opacity 0.35s ease;
   isolation: isolate;
@@ -106,64 +106,85 @@ body {
 .stripe {
   background: #000;
   position: relative;
-  transition: background-color 0.06s steps(1, end),
-    box-shadow 0.06s steps(1, end);
+  /* 统一过渡：快速跳变但带 12ms 微抖，像真实 LED 闪烁 */
+  transition: background-color 60ms steps(1, end),
+    box-shadow 120ms ease-out,
+    filter 120ms ease-out;
   will-change: background-color, box-shadow;
 }
 
-/* Per-stripe base edge glow (dim state) */
+/* ---- 暗态：微弱描边+辉光，在黑底上也能看到三格轮廓 ---- */
+/* 描边 token：每格的描边颜色是"下一格的主色"，形成渐变接力 */
 .stripe-red {
-  box-shadow: inset -3px 0 0 #ffb020, inset 0 0 24px rgba(255, 176, 32, 0.18);
+  --edge: #ffb020;         /* 描边色 = 琥珀（下一格） */
+  --edge-soft: rgba(255, 176, 32, 0.35);
+  box-shadow:
+    inset 0 0 0 2px var(--edge),
+    inset 0 0 14px 4px var(--edge-soft),
+    0 0 18px -4px rgba(255, 176, 32, 0.25);
 }
 .stripe-amber {
-  box-shadow: inset -3px 0 0 #ffffff, inset 0 0 24px rgba(255, 255, 255, 0.18);
+  --edge: #ffffff;
+  --edge-soft: rgba(255, 255, 255, 0.3);
+  box-shadow:
+    inset 0 0 0 2px var(--edge),
+    inset 0 0 14px 4px var(--edge-soft),
+    0 0 18px -4px rgba(255, 255, 255, 0.22);
 }
 .stripe-white {
-  box-shadow: inset -3px 0 0 #ff2d95, inset 0 0 24px rgba(255, 45, 149, 0.18);
+  --edge: #ff2d95;
+  --edge-soft: rgba(255, 45, 149, 0.4);
+  box-shadow:
+    inset 0 0 0 2px var(--edge),
+    inset 0 0 14px 4px var(--edge-soft),
+    0 0 18px -4px rgba(255, 45, 149, 0.28);
 }
 
-/* Bright states driven by .stage[data-strip="N"] */
+/* ---- 亮态：主色填满 + 描边描边独立辉光 + 主体 glow ---- */
 .stage[data-strip="0"] .stripe-red {
   background: #ff2b2b;
-  box-shadow: inset -3px 0 0 #ffb020, 0 0 90px 20px rgba(255, 43, 43, 0.95),
-    inset 0 0 40px rgba(255, 176, 32, 0.45);
+  box-shadow:
+    inset 0 0 0 2px #fff0c0,                    /* 描边也被照亮，用更亮的描边色 */
+    inset 0 0 22px 6px rgba(255, 220, 120, 0.85), /* 内侧 glow 加深 */
+    /* 外溢光分两层：主体红光 + 描边琥珀 */
+    0 0 30px 4px rgba(255, 176, 32, 0.65),
+    0 0 70px 18px rgba(255, 43, 43, 0.55);
+  filter: saturate(1.15) brightness(1.05);
 }
 .stage[data-strip="1"] .stripe-amber {
   background: #ffb020;
-  box-shadow: inset -3px 0 0 #ffffff, 0 0 90px 20px rgba(255, 176, 32, 0.95),
-    inset 0 0 40px rgba(255, 255, 255, 0.45);
+  box-shadow:
+    inset 0 0 0 2px #ffffff,
+    inset 0 0 22px 6px rgba(255, 255, 255, 0.85),
+    0 0 30px 4px rgba(255, 255, 255, 0.55),
+    0 0 70px 18px rgba(255, 176, 32, 0.6);
+  filter: saturate(1.15) brightness(1.05);
 }
 .stage[data-strip="2"] .stripe-white {
   background: #ffffff;
-  box-shadow: inset -3px 0 0 #ff2d95, 0 0 90px 20px rgba(255, 255, 255, 0.95),
-    inset 0 0 40px rgba(255, 45, 149, 0.5);
+  box-shadow:
+    inset 0 0 0 2px #ff9cd6,
+    inset 0 0 22px 6px rgba(255, 156, 214, 0.85),
+    0 0 30px 4px rgba(255, 45, 149, 0.55),
+    0 0 70px 18px rgba(255, 255, 255, 0.7);
+  filter: brightness(1.06);
 }
 
-/* Faint idle edge color for non-lit stripes */
-.stage[data-strip="0"] .stripe-amber,
-.stage[data-strip="0"] .stripe-white {
-  opacity: 0.95;
-}
-.stage[data-strip="1"] .stripe-red,
-.stage[data-strip="1"] .stripe-white {
-  opacity: 0.95;
-}
-.stage[data-strip="2"] .stripe-red,
-.stage[data-strip="2"] .stripe-amber {
-  opacity: 0.95;
+/* ---- gap 暗态：所有条纹只保留描边轮廓 ---- */
+.stage[data-strip="3"] .stripe-red,
+.stage[data-strip="3"] .stripe-amber,
+.stage[data-strip="3"] .stripe-white {
+  background: #000;
+  /* 描边微缩，gap 时三格轮廓退到"呼吸"状态 */
+  box-shadow:
+    inset 0 0 0 1px var(--edge),
+    inset 0 0 8px 2px var(--edge-soft),
+    0 0 10px -2px rgba(255, 255, 255, 0.08);
+  filter: brightness(0.9);
 }
 
-/* Gap between stripes as a thin divider line */
+/* 旧的 ::before 分隔线删掉，grid gap 已经搞定 */
 .stripe::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  width: 1px;
-  background: rgba(255, 255, 255, 0.07);
-}
-.stripe:last-child::before {
   display: none;
 }
 
