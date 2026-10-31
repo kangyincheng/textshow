@@ -19,6 +19,11 @@
 
   <main class="stage" id="stage">
     <div class="stage-bg" id="stageBg"></div>
+    <div class="stage-stripes" id="stageStripes" aria-hidden="true">
+      <div class="stripe stripe-red"></div>
+      <div class="stripe stripe-amber"></div>
+      <div class="stripe stripe-white"></div>
+    </div>
     <div class="stage-vignette"></div>
 
     <div class="stage-status" id="stageStatus">
@@ -186,6 +191,15 @@
             <span class="switch-desc">整屏在背景色与闪光色之间切换</span>
           </span>
           <input type="checkbox" id="bgFlash">
+          <span class="switch-ui" aria-hidden="true"></span>
+        </label>
+
+        <label class="switch-row">
+          <span class="switch-label">
+            <span class="switch-name">三格警示模式</span>
+            <span class="switch-desc">三等分三色调换 + 边缘色 + 警灯式频闪（民用风格）</span>
+          </span>
+          <input type="checkbox" id="alertStripe">
           <span class="switch-ui" aria-hidden="true"></span>
         </label>
 

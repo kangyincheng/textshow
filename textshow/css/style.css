@@ -82,6 +82,91 @@ body {
   }
 }
 
+/* ---------- Three-stripe alert ---------- */
+
+.stage-stripes {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: #000;
+  opacity: 0;
+  transform: scale(1.04);
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+  isolation: isolate;
+}
+
+.stage.alert .stage-stripes {
+  opacity: 1;
+}
+
+.stripe {
+  background: #000;
+  position: relative;
+  transition: background-color 0.06s steps(1, end),
+    box-shadow 0.06s steps(1, end);
+  will-change: background-color, box-shadow;
+}
+
+/* Per-stripe base edge glow (dim state) */
+.stripe-red {
+  box-shadow: inset -3px 0 0 #ffb020, inset 0 0 24px rgba(255, 176, 32, 0.18);
+}
+.stripe-amber {
+  box-shadow: inset -3px 0 0 #ffffff, inset 0 0 24px rgba(255, 255, 255, 0.18);
+}
+.stripe-white {
+  box-shadow: inset -3px 0 0 #ff2d95, inset 0 0 24px rgba(255, 45, 149, 0.18);
+}
+
+/* Bright states driven by .stage[data-strip="N"] */
+.stage[data-strip="0"] .stripe-red {
+  background: #ff2b2b;
+  box-shadow: inset -3px 0 0 #ffb020, 0 0 90px 20px rgba(255, 43, 43, 0.95),
+    inset 0 0 40px rgba(255, 176, 32, 0.45);
+}
+.stage[data-strip="1"] .stripe-amber {
+  background: #ffb020;
+  box-shadow: inset -3px 0 0 #ffffff, 0 0 90px 20px rgba(255, 176, 32, 0.95),
+    inset 0 0 40px rgba(255, 255, 255, 0.45);
+}
+.stage[data-strip="2"] .stripe-white {
+  background: #ffffff;
+  box-shadow: inset -3px 0 0 #ff2d95, 0 0 90px 20px rgba(255, 255, 255, 0.95),
+    inset 0 0 40px rgba(255, 45, 149, 0.5);
+}
+
+/* Faint idle edge color for non-lit stripes */
+.stage[data-strip="0"] .stripe-amber,
+.stage[data-strip="0"] .stripe-white {
+  opacity: 0.95;
+}
+.stage[data-strip="1"] .stripe-red,
+.stage[data-strip="1"] .stripe-white {
+  opacity: 0.95;
+}
+.stage[data-strip="2"] .stripe-red,
+.stage[data-strip="2"] .stripe-amber {
+  opacity: 0.95;
+}
+
+/* Gap between stripes as a thin divider line */
+.stripe::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.07);
+}
+.stripe:last-child::before {
+  display: none;
+}
+
 .stage-vignette {
   position: absolute;
   inset: 0;

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'textshow-v4';
+const CACHE_NAME = 'textshow-v5';
 const ASSETS = [
   './',
   './index.html',

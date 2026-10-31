@@ -86,6 +86,7 @@
     bgColor: '#05060c',
     flashColor: '#ff2d95',
     bgFlash: false,
+    alertStripe: false,
     bgHz: 4,
     torchHz: 8,
     soundPattern: 'alarm',
@@ -183,7 +184,15 @@
     stage.style.setProperty('--bg', state.bgColor);
     stage.style.setProperty('--flash', state.flashColor);
     stageBg.style.animationDuration = `${(1 / state.bgHz).toFixed(3)}s`;
-    stage.classList.toggle('flash-bg', state.bgFlash);
+
+    // Mutually exclusive visual modes
+    if (state.alertStripe) {
+      alertStripes.start();
+      stage.classList.remove('flash-bg');
+    } else {
+      alertStripes.stop();
+      stage.classList.toggle('flash-bg', state.bgFlash);
+    }
 
     const font = FONTS[state.font] || FONTS.heavy;
     const raw = state.text.length ? state.text : 'TEXTSHOW';
@@ -284,6 +293,7 @@
     $('#fxMarquee').checked = state.marquee;
     $('#fxRainbow').checked = state.rainbow;
     $('#bgFlash').checked = state.bgFlash;
+    $('#alertStripe').checked = state.alertStripe;
 
     torchSwitch.checked = torch.active;
     soundSwitch.checked = soundEngine.active;
@@ -310,6 +320,7 @@
       bgColor: state.bgColor,
       flashColor: state.flashColor,
       bgFlash: state.bgFlash,
+      alertStripe: state.alertStripe,
       bgHz: state.bgHz,
       torchHz: state.torchHz,
       soundPattern: state.soundPattern,
@@ -346,7 +357,7 @@
     state.bgColor = isHex(state.bgColor) ? state.bgColor : '#05060c';
     state.flashColor = isHex(state.flashColor) ? state.flashColor : '#ff2d95';
     state.soundPattern = SOUND_LABELS[state.soundPattern] ? state.soundPattern : 'alarm';
-    ['glow', 'textFlash', 'bounce', 'marquee', 'rainbow', 'bgFlash'].forEach((key) => {
+    ['glow', 'textFlash', 'bounce', 'marquee', 'rainbow', 'bgFlash', 'alertStripe'].forEach((key) => {
       state[key] = Boolean(state[key]);
     });
   }
@@ -721,6 +732,42 @@
 
   const soundEngine = new SoundEngine();
 
+  /* ---------- Three-stripe alert ---------- */
+  // Cycle: stripe0 on → gap → stripe1 on → gap → stripe2 on → gap → loop
+  // Each lit phase ~240ms, gap ~70ms → full cycle ~930ms (~1.08 Hz)
+  const alertStripes = {
+    timer: null,
+    active: false,
+    // 0=red, 1=amber, 2=white, 3=gap (all off faint edge only)
+    seq: [0, 3, 1, 3, 2, 3],
+    step: 0,
+
+    start() {
+      if (this.active) return;
+      this.active = true;
+      stage.classList.add('alert');
+      this.step = 0;
+      this.tick();
+      this.timer = setInterval(() => this.tick(), 240);
+    },
+
+    tick() {
+      const idx = this.seq[this.step % this.seq.length];
+      stage.setAttribute('data-strip', String(idx));
+      this.step += 1;
+    },
+
+    stop() {
+      if (this.timer) {
+        clearInterval(this.timer);
+        this.timer = null;
+      }
+      this.active = false;
+      stage.classList.remove('alert');
+      stage.removeAttribute('data-strip');
+    }
+  };
+
   /* ---------- Events ---------- */
 
   function bindSwitch(id, key) {
@@ -779,7 +826,26 @@
     bindSwitch('fxBounce', 'bounce');
     bindSwitch('fxMarquee', 'marquee');
     bindSwitch('fxRainbow', 'rainbow');
-    bindSwitch('bgFlash', 'bgFlash');
+    // Mutually exclusive visual modes
+    $('#bgFlash').addEventListener('change', () => {
+      state.bgFlash = $('#bgFlash').checked;
+      if (state.bgFlash && state.alertStripe) {
+        state.alertStripe = false;
+        $('#alertStripe').checked = false;
+      }
+      applyStage();
+      persist();
+    });
+
+    $('#alertStripe').addEventListener('change', () => {
+      state.alertStripe = $('#alertStripe').checked;
+      if (state.alertStripe && state.bgFlash) {
+        state.bgFlash = false;
+        $('#bgFlash').checked = false;
+      }
+      applyStage();
+      persist();
+    });
 
     $$('#textSwatches .swatch').forEach((swatch) => {
       swatch.addEventListener('click', () => {
