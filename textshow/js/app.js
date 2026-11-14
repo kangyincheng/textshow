@@ -4,7 +4,7 @@
   const $ = (selector) => document.querySelector(selector);
   const $$ = (selector) => Array.from(document.querySelectorAll(selector));
 
-  const STORAGE_KEY = 'textshow:v1';
+  const STORAGE_KEY = 'shanshuo:v1';
 
   const FONTS = {
     heavy: { family: '"Arial Black", "Helvetica Neue", Impact, system-ui, sans-serif', weight: '900' },
@@ -55,7 +55,7 @@
       bgHz: 2
     },
     clean: {
-      text: 'TEXTSHOW',
+      text: '闪闪发光',
       font: 'heavy',
       fontSize: 22,
       color: '#ffffff',
@@ -73,7 +73,7 @@
   };
 
   const DEFAULTS = {
-    text: 'TEXTSHOW',
+    text: '闪闪发光',
     font: 'heavy',
     fontSize: 20,
     color: '#ffffff',
@@ -195,7 +195,7 @@
     }
 
     const font = FONTS[state.font] || FONTS.heavy;
-    const raw = state.text.length ? state.text : 'TEXTSHOW';
+    const raw = state.text.length ? state.text : '闪闪发光';
     const display = state.marquee ? raw.replace(/\s*\n+\s*/g, ' ') : raw;
 
     displayText.textContent = display;

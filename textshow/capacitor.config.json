@@ -1,6 +1,6 @@
 {
   "appId": "com.textshow.app",
-  "appName": "TEXTSHOW",
+  "appName": "闪闪发光",
   "webDir": "www",
   "server": {
     "androidScheme": "https"

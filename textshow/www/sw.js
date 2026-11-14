@@ -1,4 +1,4 @@
-const CACHE_NAME = 'textshow-v5';
+const CACHE_NAME = 'shanshuo-v6';
 const ASSETS = [
   './',
   './index.html',
