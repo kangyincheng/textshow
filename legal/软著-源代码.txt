@@ -1,0 +1,2523 @@
+==============================
+TEXTSHOW 荧光字牌 APP 源代码
+软件版本：V1.0
+著作权人：[请填写您的姓名/公司全称]
+生成日期：2026-11-14
+==============================
+
+>>> index.html <<<
+     1	<!DOCTYPE html>
+     2	<html lang="zh-CN">
+     3	<head>
+     4	  <meta charset="UTF-8">
+     5	  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+     6	  <meta name="theme-color" content="#05060c">
+     7	  <meta name="description" content="TEXTSHOW 手机荧光字牌：演唱会应援、车辆故障警示。支持发光字、走马灯、背景频闪、摄像头闪光灯频闪与警示音。">
+     8	  <meta name="mobile-web-app-capable" content="yes">
+     9	  <meta name="apple-mobile-web-app-capable" content="yes">
+    10	  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    11	  <meta name="apple-mobile-web-app-title" content="TEXTSHOW">
+    12	  <title>TEXTSHOW · 荧光字牌</title>
+    13	  <link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+    14	  <link rel="apple-touch-icon" href="icons/icon-180.png">
+    15	  <link rel="manifest" href="manifest.webmanifest">
+    16	  <link rel="stylesheet" href="css/style.css">
+    17	</head>
+    18	<body>
+    19	
+    20	  <main class="stage" id="stage">
+    21	    <div class="stage-bg" id="stageBg"></div>
+    22	    <div class="stage-stripes" id="stageStripes" aria-hidden="true">
+    23	      <div class="stripe stripe-red"></div>
+    24	      <div class="stripe stripe-amber"></div>
+    25	      <div class="stripe stripe-white"></div>
+    26	    </div>
+    27	    <div class="stage-vignette"></div>
+    28	
+    29	    <div class="stage-status" id="stageStatus">
+    30	      <span class="live-pill"><i></i>LIVE</span>
+    31	      <span class="status-pill" id="torchPill" hidden>闪光灯</span>
+    32	      <span class="status-pill" id="soundPill" hidden>警示音</span>
+    33	    </div>
+    34	
+    35	    <button class="stage-cta" id="openPanel" type="button" aria-controls="panel" aria-expanded="true">
+    36	      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+    37	        <path d="M4 7h16M4 12h16M4 17h16"></path>
+    38	        <circle cx="9" cy="7" r="2" fill="#05060c"></circle>
+    39	        <circle cx="15" cy="12" r="2" fill="#05060c"></circle>
+    40	        <circle cx="8" cy="17" r="2" fill="#05060c"></circle>
+    41	      </svg>
+    42	      <span>控制</span>
+    43	    </button>
+    44	
+    45	    <div class="marquee" id="marquee">
+    46	      <div class="marquee-track" id="marqueeTrack">
+    47	        <span class="display-text" id="displayText">TEXTSHOW</span>
+    48	        <span class="display-text" id="displayTextClone" aria-hidden="true">TEXTSHOW</span>
+    49	      </div>
+    50	    </div>
+    51	
+    52	    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    53	  </main>
+    54	
+    55	  <div class="panel-backdrop show" id="panelBackdrop"></div>
+    56	
+    57	  <aside class="panel open" id="panel" aria-hidden="false" aria-label="控制面板">
+    58	    <div class="panel-handle" aria-hidden="true"></div>
+    59	
+    60	    <header class="panel-head">
+    61	      <div class="brand">
+    62	        <span class="brand-mark">T</span>
+    63	        <div class="brand-text">
+    64	          <strong>TEXTSHOW</strong>
+    65	          <small>演唱会 · 紧急警示 荧光字牌</small>
+    66	        </div>
+    67	      </div>
+    68	      <button class="icon-btn" id="panelClose" type="button" aria-label="收起控制面板">×</button>
+    69	    </header>
+    70	
+    71	    <div class="panel-body">
+    72	      <div class="preset-row" id="presetRow">
+    73	        <button class="preset" type="button" data-preset="concert" style="--dot:#ff2d95">
+    74	          <span class="preset-dot"></span>演唱会
+    75	        </button>
+    76	        <button class="preset" type="button" data-preset="emergency" style="--dot:#ff3b30">
+    77	          <span class="preset-dot"></span>车辆故障
+    78	        </button>
+    79	        <button class="preset" type="button" data-preset="clean" style="--dot:#4cc9f0">
+    80	          <span class="preset-dot"></span>纯净字幕
+    81	        </button>
+    82	      </div>
+    83	
+    84	      <section class="field-group">
+    85	        <div class="group-head">
+    86	          <span class="idx">01</span>
+    87	          <h2>文字内容</h2>
+    88	        </div>
+    89	        <textarea id="textInput" class="text-input" rows="2" maxlength="120" placeholder="输入要显示的文字…" aria-label="显示文字">TEXTSHOW</textarea>
+    90	        <div class="chips" id="phraseChips">
+    91	          <button type="button" data-phrase="一起唱！">一起唱！</button>
+    92	          <button type="button" data-phrase="ENCORE">ENCORE</button>
+    93	          <button type="button" data-phrase="车辆故障 请绕行">车辆故障 请绕行</button>
+    94	          <button type="button" data-phrase="需要帮助">需要帮助</button>
+    95	        </div>
+    96	
+    97	        <div class="row"><span class="row-label">字体</span></div>
+    98	        <div class="seg seg-font" id="fontSeg">
+    99	          <button type="button" class="seg-btn is-active" data-font="heavy">冲击</button>
+   100	          <button type="button" class="seg-btn" data-font="sans">黑体</button>
+   101	          <button type="button" class="seg-btn" data-font="serif">宋体</button>
+   102	          <button type="button" class="seg-btn" data-font="mono">LED</button>
+   103	          <button type="button" class="seg-btn" data-font="round">圆体</button>
+   104	        </div>
+   105	
+   106	        <div class="row"><span class="row-label">字号</span><output id="sizeOut" for="sizeRange">20</output></div>
+   107	        <input class="range" id="sizeRange" type="range" min="6" max="40" step="1" value="20" aria-label="字号">
+   108	        <p class="hint">字号为上限值，长文本或竖屏会自动缩小以完整显示。</p>
+   109	
+   110	        <div class="row"><span class="row-label">文字颜色</span></div>
+   111	        <div class="color-row">
+   112	          <div class="swatches" id="textSwatches">
+   113	            <button type="button" class="swatch is-active" data-color="#ffffff" style="--sw:#ffffff" aria-label="白色"></button>
+   114	            <button type="button" class="swatch" data-color="#ff2d95" style="--sw:#ff2d95" aria-label="霓虹粉"></button>
+   115	            <button type="button" class="swatch" data-color="#4cc9f0" style="--sw:#4cc9f0" aria-label="电光蓝"></button>
+   116	            <button type="button" class="swatch" data-color="#ffd166" style="--sw:#ffd166" aria-label="警示黄"></button>
+   117	            <button type="button" class="swatch" data-color="#ff3b30" style="--sw:#ff3b30" aria-label="警示红"></button>
+   118	            <button type="button" class="swatch" data-color="#7cff6b" style="--sw:#7cff6b" aria-label="荧光绿"></button>
+   119	          </div>
+   120	          <label class="color-picker">
+   121	            <input type="color" id="textColor" value="#ffffff" aria-label="自定义文字颜色">
+   122	            <span>自定义</span>
+   123	          </label>
+   124	        </div>
+   125	      </section>
+   126	
+   127	      <section class="field-group">
+   128	        <div class="group-head">
+   129	          <span class="idx">02</span>
+   130	          <h2>文字特效</h2>
+   131	        </div>
+   132	
+   133	        <label class="switch-row">
+   134	          <span class="switch-label">
+   135	            <span class="switch-name">霓虹发光</span>
+   136	            <span class="switch-desc">文字外圈多级光晕</span>
+   137	          </span>
+   138	          <input type="checkbox" id="fxGlow" checked>
+   139	          <span class="switch-ui" aria-hidden="true"></span>
+   140	        </label>
+   141	
+   142	        <label class="switch-row">
+   143	          <span class="switch-label">
+   144	            <span class="switch-name">文字闪光</span>
+   145	            <span class="switch-desc">文字忽明忽暗</span>
+   146	          </span>
+   147	          <input type="checkbox" id="fxFlash">
+   148	          <span class="switch-ui" aria-hidden="true"></span>
+   149	        </label>
+   150	
+   151	        <label class="switch-row">
+   152	          <span class="switch-label">
+   153	            <span class="switch-name">跳动字体</span>
+   154	            <span class="switch-desc">文字上下弹跳</span>
+   155	          </span>
+   156	          <input type="checkbox" id="fxBounce" checked>
+   157	          <span class="switch-ui" aria-hidden="true"></span>
+   158	        </label>
+   159	
+   160	        <label class="switch-row">
+   161	          <span class="switch-label">
+   162	            <span class="switch-name">走马灯</span>
+   163	            <span class="switch-desc">文字横向循环滚动</span>
+   164	          </span>
+   165	          <input type="checkbox" id="fxMarquee" checked>
+   166	          <span class="switch-ui" aria-hidden="true"></span>
+   167	        </label>
+   168	
+   169	        <label class="switch-row">
+   170	          <span class="switch-label">
+   171	            <span class="switch-name">彩虹渐变</span>
+   172	            <span class="switch-desc">彩色流光填充文字</span>
+   173	          </span>
+   174	          <input type="checkbox" id="fxRainbow">
+   175	          <span class="switch-ui" aria-hidden="true"></span>
+   176	        </label>
+   177	
+   178	        <div class="row"><span class="row-label">动画速度</span><output id="speedOut" for="speedRange">1.0×</output></div>
+   179	        <input class="range" id="speedRange" type="range" min="0.3" max="3" step="0.1" value="1" aria-label="动画速度">
+   180	      </section>
+   181	
+   182	      <section class="field-group">
+   183	        <div class="group-head">
+   184	          <span class="idx">03</span>
+   185	          <h2>背景闪光</h2>
+   186	        </div>
+   187	
+   188	        <label class="switch-row">
+   189	          <span class="switch-label">
+   190	            <span class="switch-name">背景频闪</span>
+   191	            <span class="switch-desc">整屏在背景色与闪光色之间切换</span>
+   192	          </span>
+   193	          <input type="checkbox" id="bgFlash">
+   194	          <span class="switch-ui" aria-hidden="true"></span>
+   195	        </label>
+   196	
+   197	        <label class="switch-row">
+   198	          <span class="switch-label">
+   199	            <span class="switch-name">三格警示模式</span>
+   200	            <span class="switch-desc">三等分三色调换 + 边缘色 + 警灯式频闪（民用风格）</span>
+   201	          </span>
+   202	          <input type="checkbox" id="alertStripe">
+   203	          <span class="switch-ui" aria-hidden="true"></span>
+   204	        </label>
+   205	
+   206	        <div class="row"><span class="row-label">颜色</span></div>
+   207	        <div class="color-row">
+   208	          <label class="color-picker">
+   209	            <input type="color" id="bgColor" value="#05060c" aria-label="背景颜色">
+   210	            <span>背景</span>
+   211	          </label>
+   212	          <label class="color-picker">
+   213	            <input type="color" id="flashColor" value="#ff2d95" aria-label="闪光颜色">
+   214	            <span>闪光</span>
+   215	          </label>
+   216	        </div>
+   217	
+   218	        <div class="row"><span class="row-label">频闪频率</span><output id="bgHzOut" for="bgHzRange">4.0 Hz</output></div>
+   219	        <input class="range" id="bgHzRange" type="range" min="0.5" max="12" step="0.5" value="4" aria-label="背景频闪频率">
+   220	        <p class="hint">Hz 指每秒完整明暗循环次数。3–30 Hz 频闪可能诱发光敏性癫痫，请谨慎使用并避免直射眼睛。</p>
+   221	      </section>
+   222	
+   223	      <section class="field-group">
+   224	        <div class="group-head">
+   225	          <span class="idx">04</span>
+   226	          <h2>摄像头闪光灯</h2>
+   227	        </div>
+   228	
+   229	        <label class="switch-row">
+   230	          <span class="switch-label">
+   231	            <span class="switch-name">手电筒频闪</span>
+   232	            <span class="switch-desc">调用后置镜头的 LED 灯珠</span>
+   233	          </span>
+   234	          <input type="checkbox" id="torchSwitch">
+   235	          <span class="switch-ui" aria-hidden="true"></span>
+   236	        </label>
+   237	
+   238	        <div class="row"><span class="row-label">闪光频率</span><output id="torchHzOut" for="torchHzRange">8.0 Hz</output></div>
+   239	        <input class="range" id="torchHzRange" type="range" min="0.5" max="20" step="0.5" value="8" aria-label="闪光灯频闪频率">
+   240	        <p class="hint" id="torchHint">首次开启会请求摄像头权限，画面不会显示也不会录制。需 Android Chrome / Edge 等支持；iOS Safari 暂不支持网页控制手电筒，请使用系统手电筒。高频受灯珠硬件限制。</p>
+   241	      </section>
+   242	
+   243	      <section class="field-group">
+   244	        <div class="group-head">
+   245	          <span class="idx">05</span>
+   246	          <h2>警示音</h2>
+   247	        </div>
+   248	
+   249	        <label class="switch-row">
+   250	          <span class="switch-label">
+   251	            <span class="switch-name">声音警示</span>
+   252	            <span class="switch-desc">由手机扬声器发出高调警示音</span>
+   253	          </span>
+   254	          <input type="checkbox" id="soundSwitch">
+   255	          <span class="switch-ui" aria-hidden="true"></span>
+   256	        </label>
+   257	
+   258	        <div class="seg seg-sound" id="soundSeg">
+   259	          <button type="button" class="seg-btn is-active" data-sound="alarm">高频警报</button>
+   260	          <button type="button" class="seg-btn" data-sound="siren">警笛</button>
+   261	          <button type="button" class="seg-btn" data-sound="urgent">急促哔声</button>
+   262	          <button type="button" class="seg-btn" data-sound="steady">持续鸣响</button>
+   263	        </div>
+   264	
+   265	        <div class="row"><span class="row-label">音量</span><output id="volumeOut" for="volumeRange">40</output></div>
+   266	        <input class="range" id="volumeRange" type="range" min="0" max="100" step="1" value="40" aria-label="警示音音量">
+   267	        <p class="hint">请遵守当地噪声与鸣笛法规，勿在禁鸣区域使用；长时间高音量可能损伤听力，建议短时使用。</p>
+   268	      </section>
+   269	
+   270	      <p class="foot-note">轻触屏幕可重新打开控制面板。闪光与高音存在健康风险，请远离婴幼儿、孕妇及光敏人群。</p>
+   271	    </div>
+   272	
+   273	    <footer class="panel-foot">
+   274	      <button class="primary-btn" id="startShow" type="button">
+   275	        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg>
+   276	        <span>开始演出</span>
+   277	      </button>
+   278	    </footer>
+   279	  </aside>
+   280	
+   281	  <video id="torchVideo" playsinline muted aria-hidden="true"></video>
+   282	
+   283	  <script src="js/app.js" defer></script>
+   284	</body>
+   285	</html>
+
+>>> manifest.webmanifest <<<
+     1	{
+     2	  "name": "TEXTSHOW 荧光字牌",
+     3	  "short_name": "TEXTSHOW",
+     4	  "description": "演唱会应援与车辆故障警示用的手机荧光字牌：发光字、走马灯、背景频闪、摄像头闪光灯频闪与警示音。",
+     5	  "lang": "zh-CN",
+     6	  "start_url": "./",
+     7	  "scope": "./",
+     8	  "display": "standalone",
+     9	  "orientation": "any",
+    10	  "background_color": "#05060c",
+    11	  "theme_color": "#05060c",
+    12	  "categories": ["utilities", "entertainment"],
+    13	  "icons": [
+    14	    {
+    15	      "src": "icons/icon-192.png",
+    16	      "sizes": "192x192",
+    17	      "type": "image/png",
+    18	      "purpose": "any"
+    19	    },
+    20	    {
+    21	      "src": "icons/icon-512.png",
+    22	      "sizes": "512x512",
+    23	      "type": "image/png",
+    24	      "purpose": "any"
+    25	    },
+    26	    {
+    27	      "src": "icons/icon-512.png",
+    28	      "sizes": "512x512",
+    29	      "type": "image/png",
+    30	      "purpose": "maskable"
+    31	    }
+    32	  ]
+    33	}
+
+>>> sw.js <<<
+     1	const CACHE_NAME = 'textshow-v5';
+     2	const ASSETS = [
+     3	  './',
+     4	  './index.html',
+     5	  './css/style.css',
+     6	  './js/app.js',
+     7	  './manifest.webmanifest',
+     8	  './icons/favicon.svg',
+     9	  './icons/icon-180.png',
+    10	  './icons/icon-192.png',
+    11	  './icons/icon-512.png'
+    12	];
+    13	
+    14	self.addEventListener('install', (event) => {
+    15	  event.waitUntil(
+    16	    caches
+    17	      .open(CACHE_NAME)
+    18	      .then((cache) => cache.addAll(ASSETS))
+    19	      .then(() => self.skipWaiting())
+    20	  );
+    21	});
+    22	
+    23	self.addEventListener('activate', (event) => {
+    24	  event.waitUntil(
+    25	    caches
+    26	      .keys()
+    27	      .then((keys) => Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))))
+    28	      .then(() => self.clients.claim())
+    29	  );
+    30	});
+    31	
+    32	self.addEventListener('fetch', (event) => {
+    33	  if (event.request.method !== 'GET') return;
+    34	
+    35	  event.respondWith(
+    36	    caches.match(event.request).then((cached) => {
+    37	      if (cached) return cached;
+    38	      return fetch(event.request)
+    39	        .then((response) => {
+    40	          const copy = response.clone();
+    41	          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+    42	          return response;
+    43	        })
+    44	        .catch(() => caches.match('./index.html'));
+    45	    })
+    46	  );
+    47	});
+
+>>> css/style.css <<<
+     1	:root {
+     2	  --bg: #05060c;
+     3	  --text: #ffffff;
+     4	  --flash: #ff2d95;
+     5	  --glow: #ffffff;
+     6	  --accent: #ff2d95;
+     7	  --accent-2: #4cc9f0;
+     8	  --panel-bg: rgba(13, 15, 26, 0.97);
+     9	  --line: rgba(255, 255, 255, 0.08);
+    10	  --line-strong: rgba(255, 255, 255, 0.14);
+    11	  --muted: #9a9aac;
+    12	  --muted-2: #707185;
+    13	  --font-size: 20vmin;
+    14	  --speed: 1;
+    15	  --bg-hz: 4;
+    16	  --font-family: "Arial Black", "Helvetica Neue", Impact, system-ui, sans-serif;
+    17	  --font-weight: 900;
+    18	  color-scheme: dark;
+    19	}
+    20	
+    21	* {
+    22	  box-sizing: border-box;
+    23	}
+    24	
+    25	[hidden] {
+    26	  display: none !important;
+    27	}
+    28	
+    29	html,
+    30	body {
+    31	  height: 100%;
+    32	  margin: 0;
+    33	}
+    34	
+    35	body {
+    36	  background: #000;
+    37	  color: #fff;
+    38	  font-family: ui-sans-serif, system-ui, -apple-system, "PingFang SC", "HarmonyOS Sans SC", "Microsoft YaHei", sans-serif;
+    39	  overflow: hidden;
+    40	  touch-action: manipulation;
+    41	  -webkit-tap-highlight-color: transparent;
+    42	  -webkit-font-smoothing: antialiased;
+    43	}
+    44	
+    45	/* ---------- Stage ---------- */
+    46	
+    47	.stage {
+    48	  position: fixed;
+    49	  inset: 0;
+    50	  display: flex;
+    51	  align-items: center;
+    52	  justify-content: center;
+    53	  padding: max(9vmin, 54px) 5vmin max(9vmin, 54px);
+    54	  overflow: hidden;
+    55	  background: #000;
+    56	  isolation: isolate;
+    57	  cursor: pointer;
+    58	}
+    59	
+    60	.stage-bg {
+    61	  position: absolute;
+    62	  inset: 0;
+    63	  z-index: -2;
+    64	  background-color: var(--bg);
+    65	  animation-duration: 0.25s;
+    66	}
+    67	
+    68	.stage.flash-bg .stage-bg {
+    69	  animation-name: bgFlash;
+    70	  animation-timing-function: steps(1, end);
+    71	  animation-iteration-count: infinite;
+    72	}
+    73	
+    74	@keyframes bgFlash {
+    75	  0%,
+    76	  49.99% {
+    77	    background-color: var(--bg);
+    78	  }
+    79	  50%,
+    80	  100% {
+    81	    background-color: var(--flash);
+    82	  }
+    83	}
+    84	
+    85	/* ---------- Three-stripe alert ---------- */
+    86	
+    87	.stage-stripes {
+    88	  position: absolute;
+    89	  inset: 0;
+    90	  z-index: -1;
+    91	  display: grid;
+    92	  grid-template-columns: repeat(3, 1fr);
+    93	  /* grid gap 作为三格之间天然的 1px 黑分隔 */
+    94	  gap: 1px;
+    95	  background: #000;
+    96	  opacity: 0;
+    97	  pointer-events: none;
+    98	  transition: opacity 0.35s ease;
+    99	  isolation: isolate;
+   100	}
+   101	
+   102	.stage.alert .stage-stripes {
+   103	  opacity: 1;
+   104	}
+   105	
+   106	.stripe {
+   107	  background: #000;
+   108	  position: relative;
+   109	  /* 统一过渡：快速跳变但带 12ms 微抖，像真实 LED 闪烁 */
+   110	  transition: background-color 60ms steps(1, end),
+   111	    box-shadow 120ms ease-out,
+   112	    filter 120ms ease-out;
+   113	  will-change: background-color, box-shadow;
+   114	}
+   115	
+   116	/* ---- 暗态：微弱描边+辉光，在黑底上也能看到三格轮廓 ---- */
+   117	/* 描边 token：每格的描边颜色是"下一格的主色"，形成渐变接力 */
+   118	.stripe-red {
+   119	  --edge: #ffb020;         /* 描边色 = 琥珀（下一格） */
+   120	  --edge-soft: rgba(255, 176, 32, 0.35);
+   121	  box-shadow:
+   122	    inset 0 0 0 2px var(--edge),
+   123	    inset 0 0 14px 4px var(--edge-soft),
+   124	    0 0 18px -4px rgba(255, 176, 32, 0.25);
+   125	}
+   126	.stripe-amber {
+   127	  --edge: #ffffff;
+   128	  --edge-soft: rgba(255, 255, 255, 0.3);
+   129	  box-shadow:
+   130	    inset 0 0 0 2px var(--edge),
+   131	    inset 0 0 14px 4px var(--edge-soft),
+   132	    0 0 18px -4px rgba(255, 255, 255, 0.22);
+   133	}
+   134	.stripe-white {
+   135	  --edge: #ff2d95;
+   136	  --edge-soft: rgba(255, 45, 149, 0.4);
+   137	  box-shadow:
+   138	    inset 0 0 0 2px var(--edge),
+   139	    inset 0 0 14px 4px var(--edge-soft),
+   140	    0 0 18px -4px rgba(255, 45, 149, 0.28);
+   141	}
+   142	
+   143	/* ---- 亮态：主色填满 + 描边描边独立辉光 + 主体 glow ---- */
+   144	.stage[data-strip="0"] .stripe-red {
+   145	  background: #ff2b2b;
+   146	  box-shadow:
+   147	    inset 0 0 0 2px #fff0c0,                    /* 描边也被照亮，用更亮的描边色 */
+   148	    inset 0 0 22px 6px rgba(255, 220, 120, 0.85), /* 内侧 glow 加深 */
+   149	    /* 外溢光分两层：主体红光 + 描边琥珀 */
+   150	    0 0 30px 4px rgba(255, 176, 32, 0.65),
+   151	    0 0 70px 18px rgba(255, 43, 43, 0.55);
+   152	  filter: saturate(1.15) brightness(1.05);
+   153	}
+   154	.stage[data-strip="1"] .stripe-amber {
+   155	  background: #ffb020;
+   156	  box-shadow:
+   157	    inset 0 0 0 2px #ffffff,
+   158	    inset 0 0 22px 6px rgba(255, 255, 255, 0.85),
+   159	    0 0 30px 4px rgba(255, 255, 255, 0.55),
+   160	    0 0 70px 18px rgba(255, 176, 32, 0.6);
+   161	  filter: saturate(1.15) brightness(1.05);
+   162	}
+   163	.stage[data-strip="2"] .stripe-white {
+   164	  background: #ffffff;
+   165	  box-shadow:
+   166	    inset 0 0 0 2px #ff9cd6,
+   167	    inset 0 0 22px 6px rgba(255, 156, 214, 0.85),
+   168	    0 0 30px 4px rgba(255, 45, 149, 0.55),
+   169	    0 0 70px 18px rgba(255, 255, 255, 0.7);
+   170	  filter: brightness(1.06);
+   171	}
+   172	
+   173	/* ---- gap 暗态：所有条纹只保留描边轮廓 ---- */
+   174	.stage[data-strip="3"] .stripe-red,
+   175	.stage[data-strip="3"] .stripe-amber,
+   176	.stage[data-strip="3"] .stripe-white {
+   177	  background: #000;
+   178	  /* 描边微缩，gap 时三格轮廓退到"呼吸"状态 */
+   179	  box-shadow:
+   180	    inset 0 0 0 1px var(--edge),
+   181	    inset 0 0 8px 2px var(--edge-soft),
+   182	    0 0 10px -2px rgba(255, 255, 255, 0.08);
+   183	  filter: brightness(0.9);
+   184	}
+   185	
+   186	/* 旧的 ::before 分隔线删掉，grid gap 已经搞定 */
+   187	.stripe::before {
+   188	  display: none;
+   189	}
+   190	
+   191	.stage-vignette {
+   192	  position: absolute;
+   193	  inset: 0;
+   194	  z-index: -1;
+   195	  pointer-events: none;
+   196	  background:
+   197	    radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.07), transparent 58%),
+   198	    radial-gradient(circle at 50% 50%, transparent 55%, rgba(0, 0, 0, 0.5) 100%);
+   199	}
+   200	
+   201	.stage-status {
+   202	  position: absolute;
+   203	  top: max(14px, calc(env(safe-area-inset-top) + 8px));
+   204	  left: max(14px, calc(env(safe-area-inset-left) + 12px));
+   205	  z-index: 10;
+   206	  display: flex;
+   207	  flex-wrap: wrap;
+   208	  gap: 6px;
+   209	  max-width: 58vw;
+   210	  pointer-events: none;
+   211	}
+   212	
+   213	.live-pill,
+   214	.status-pill {
+   215	  display: inline-flex;
+   216	  align-items: center;
+   217	  gap: 6px;
+   218	  padding: 6px 10px;
+   219	  border: 1px solid rgba(255, 255, 255, 0.14);
+   220	  border-radius: 999px;
+   221	  background: rgba(8, 9, 16, 0.6);
+   222	  backdrop-filter: blur(10px);
+   223	  -webkit-backdrop-filter: blur(10px);
+   224	  font-size: 10px;
+   225	  font-weight: 700;
+   226	  letter-spacing: 0.1em;
+   227	  color: #dcdce6;
+   228	  white-space: nowrap;
+   229	}
+   230	
+   231	.live-pill i {
+   232	  width: 6px;
+   233	  height: 6px;
+   234	  border-radius: 50%;
+   235	  background: #ff3b30;
+   236	  box-shadow: 0 0 8px #ff3b30;
+   237	  animation: livePulse 1.6s ease-in-out infinite;
+   238	}
+   239	
+   240	@keyframes livePulse {
+   241	  0%,
+   242	  100% {
+   243	    opacity: 1;
+   244	  }
+   245	  50% {
+   246	    opacity: 0.25;
+   247	  }
+   248	}
+   249	
+   250	.status-pill {
+   251	  letter-spacing: 0.04em;
+   252	  color: #fff;
+   253	  border-color: rgba(255, 45, 149, 0.4);
+   254	  background: rgba(255, 45, 149, 0.16);
+   255	}
+   256	
+   257	.stage-cta {
+   258	  position: absolute;
+   259	  top: max(14px, calc(env(safe-area-inset-top) + 8px));
+   260	  right: max(14px, calc(env(safe-area-inset-right) + 12px));
+   261	  z-index: 10;
+   262	  display: inline-flex;
+   263	  align-items: center;
+   264	  gap: 7px;
+   265	  padding: 8px 13px;
+   266	  border-radius: 999px;
+   267	  border: 1px solid rgba(255, 255, 255, 0.16);
+   268	  background: rgba(8, 9, 16, 0.58);
+   269	  backdrop-filter: blur(10px);
+   270	  -webkit-backdrop-filter: blur(10px);
+   271	  color: #fff;
+   272	  font-family: inherit;
+   273	  font-size: 11.5px;
+   274	  font-weight: 600;
+   275	  letter-spacing: 0.05em;
+   276	  cursor: pointer;
+   277	  opacity: 0.9;
+   278	  transition: opacity 0.2s, transform 0.2s;
+   279	}
+   280	
+   281	.stage-cta:active {
+   282	  transform: scale(0.96);
+   283	}
+   284	
+   285	/* ---------- Display text ---------- */
+   286	
+   287	.marquee {
+   288	  width: 100%;
+   289	  overflow: visible;
+   290	  display: flex;
+   291	  justify-content: center;
+   292	  align-items: center;
+   293	}
+   294	
+   295	.marquee-track {
+   296	  display: flex;
+   297	  width: 100%;
+   298	  justify-content: center;
+   299	  align-items: center;
+   300	  will-change: transform;
+   301	}
+   302	
+   303	.marquee.on {
+   304	  justify-content: flex-start;
+   305	  width: 100vw;
+   306	  margin-inline: -5vmin;
+   307	  overflow: hidden;
+   308	  padding-block: calc(var(--font-size) * 0.6);
+   309	  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 4%, #000 96%, transparent 100%);
+   310	  mask-image: linear-gradient(90deg, transparent 0, #000 4%, #000 96%, transparent 100%);
+   311	}
+   312	
+   313	.marquee.on .marquee-track {
+   314	  width: max-content;
+   315	  justify-content: flex-start;
+   316	  animation: marquee var(--mq-dur, 10s) linear infinite;
+   317	}
+   318	
+   319	@keyframes marquee {
+   320	  from {
+   321	    transform: translate3d(0, 0, 0);
+   322	  }
+   323	  to {
+   324	    transform: translate3d(-50%, 0, 0);
+   325	  }
+   326	}
+   327	
+   328	.display-text {
+   329	  display: block;
+   330	  max-width: 100%;
+   331	  padding: 0.05em 0.06em;
+   332	  font-family: var(--font-family);
+   333	  font-weight: var(--font-weight);
+   334	  font-size: var(--font-size);
+   335	  line-height: 1.06;
+   336	  letter-spacing: 0.02em;
+   337	  text-align: center;
+   338	  color: var(--text);
+   339	  white-space: pre-wrap;
+   340	  word-break: keep-all;
+   341	  text-rendering: optimizeLegibility;
+   342	  will-change: transform, opacity;
+   343	}
+   344	
+   345	.marquee.on .display-text {
+   346	  flex: 0 0 auto;
+   347	  max-width: none;
+   348	  padding-right: 0.7em;
+   349	  white-space: pre;
+   350	}
+   351	
+   352	.marquee:not(.on) .display-text + .display-text {
+   353	  display: none;
+   354	}
+   355	
+   356	.display-text.glow {
+   357	  text-shadow:
+   358	    0 0 0.02em rgba(255, 255, 255, 0.9),
+   359	    0 0 0.06em var(--glow),
+   360	    0 0 0.18em var(--glow),
+   361	    0 0 0.42em var(--glow);
+   362	}
+   363	
+   364	.display-text.rainbow {
+   365	  background-image: linear-gradient(
+   366	    90deg,
+   367	    #ff2d95 0%,
+   368	    #ffd166 18%,
+   369	    #7cff6b 36%,
+   370	    #4cc9f0 54%,
+   371	    #b388ff 72%,
+   372	    #ff2d95 100%
+   373	  );
+   374	  background-size: 300% 100%;
+   375	  -webkit-background-clip: text;
+   376	  background-clip: text;
+   377	  -webkit-text-fill-color: transparent;
+   378	  -webkit-text-stroke: 0.012em rgba(0, 0, 0, 0.38);
+   379	  text-shadow: none;
+   380	  filter: drop-shadow(0 0 0.12em var(--glow));
+   381	}
+   382	
+   383	.display-text.rainbow.glow {
+   384	  filter:
+   385	    drop-shadow(0 0 0.04em rgba(255, 255, 255, 0.9))
+   386	    drop-shadow(0 0 0.16em var(--glow))
+   387	    drop-shadow(0 0 0.3em var(--glow));
+   388	}
+   389	
+   390	@keyframes textFlash {
+   391	  0%,
+   392	  54% {
+   393	    opacity: 1;
+   394	  }
+   395	  55%,
+   396	  100% {
+   397	    opacity: 0.08;
+   398	  }
+   399	}
+   400	
+   401	@keyframes bounce {
+   402	  0%,
+   403	  100% {
+   404	    transform: translateY(0) scale(1);
+   405	  }
+   406	  30% {
+   407	    transform: translateY(-0.14em) scale(1.02);
+   408	  }
+   409	  55% {
+   410	    transform: translateY(0) scale(0.99);
+   411	  }
+   412	  72% {
+   413	    transform: translateY(-0.05em) scale(1);
+   414	  }
+   415	}
+   416	
+   417	@keyframes rainbow {
+   418	  0% {
+   419	    background-position: 0% 50%;
+   420	  }
+   421	  100% {
+   422	    background-position: 300% 50%;
+   423	  }
+   424	}
+   425	
+   426	/* ---------- Backdrop & panel ---------- */
+   427	
+   428	.panel-backdrop {
+   429	  position: fixed;
+   430	  inset: 0;
+   431	  z-index: 30;
+   432	  background: rgba(0, 0, 0, 0.25);
+   433	  opacity: 0;
+   434	  pointer-events: none;
+   435	  transition: opacity 0.3s ease;
+   436	}
+   437	
+   438	.panel-backdrop.show {
+   439	  opacity: 1;
+   440	  pointer-events: auto;
+   441	}
+   442	
+   443	.panel {
+   444	  position: fixed;
+   445	  left: 50%;
+   446	  bottom: 0;
+   447	  z-index: 40;
+   448	  display: flex;
+   449	  flex-direction: column;
+   450	  width: min(460px, 100%);
+   451	  max-height: min(88dvh, 820px);
+   452	  padding-bottom: env(safe-area-inset-bottom);
+   453	  background:
+   454	    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 120px),
+   455	    var(--panel-bg);
+   456	  border: 1px solid rgba(255, 255, 255, 0.1);
+   457	  border-bottom: 0;
+   458	  border-radius: 22px 22px 0 0;
+   459	  box-shadow: 0 -28px 90px rgba(0, 0, 0, 0.75);
+   460	  transform: translate(-50%, 105%);
+   461	  transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+   462	}
+   463	
+   464	.panel::before {
+   465	  content: "";
+   466	  position: absolute;
+   467	  top: -1px;
+   468	  left: 18%;
+   469	  right: 18%;
+   470	  height: 1px;
+   471	  background: linear-gradient(90deg, transparent, var(--accent), var(--accent-2), transparent);
+   472	  opacity: 0.85;
+   473	}
+   474	
+   475	.panel.open {
+   476	  transform: translate(-50%, 0);
+   477	}
+   478	
+   479	.panel-handle {
+   480	  width: 36px;
+   481	  height: 4px;
+   482	  margin: 9px auto 2px;
+   483	  border-radius: 99px;
+   484	  background: rgba(255, 255, 255, 0.18);
+   485	  flex: 0 0 auto;
+   486	}
+   487	
+   488	.panel-head {
+   489	  display: flex;
+   490	  align-items: center;
+   491	  justify-content: space-between;
+   492	  gap: 12px;
+   493	  padding: 10px 20px 12px;
+   494	  flex: 0 0 auto;
+   495	}
+   496	
+   497	.brand {
+   498	  display: flex;
+   499	  align-items: center;
+   500	  gap: 11px;
+   501	  min-width: 0;
+   502	}
+   503	
+   504	.brand-mark {
+   505	  display: grid;
+   506	  place-items: center;
+   507	  width: 38px;
+   508	  height: 38px;
+   509	  border-radius: 11px;
+   510	  background: linear-gradient(140deg, #ff2d95, #7c4dff 58%, #4cc9f0);
+   511	  box-shadow: 0 6px 18px rgba(124, 77, 255, 0.35);
+   512	  font-size: 19px;
+   513	  font-weight: 900;
+   514	  color: #fff;
+   515	  flex: 0 0 auto;
+   516	}
+   517	
+   518	.brand-text {
+   519	  display: flex;
+   520	  flex-direction: column;
+   521	  gap: 2px;
+   522	  min-width: 0;
+   523	}
+   524	
+   525	.brand-text strong {
+   526	  font-size: 17px;
+   527	  font-weight: 900;
+   528	  letter-spacing: 0.16em;
+   529	  line-height: 1.1;
+   530	}
+   531	
+   532	.brand-text small {
+   533	  font-size: 10.5px;
+   534	  color: var(--muted-2);
+   535	  letter-spacing: 0.06em;
+   536	  white-space: nowrap;
+   537	  overflow: hidden;
+   538	  text-overflow: ellipsis;
+   539	}
+   540	
+   541	.icon-btn {
+   542	  display: grid;
+   543	  place-items: center;
+   544	  width: 34px;
+   545	  height: 34px;
+   546	  flex: 0 0 auto;
+   547	  border: 1px solid var(--line);
+   548	  border-radius: 50%;
+   549	  background: rgba(255, 255, 255, 0.05);
+   550	  color: #cfcfda;
+   551	  font-family: inherit;
+   552	  font-size: 22px;
+   553	  line-height: 1;
+   554	  cursor: pointer;
+   555	  transition: background 0.2s, transform 0.2s;
+   556	}
+   557	
+   558	.icon-btn:active {
+   559	  transform: scale(0.92);
+   560	  background: rgba(255, 255, 255, 0.12);
+   561	}
+   562	
+   563	.panel-body {
+   564	  flex: 1 1 auto;
+   565	  overflow-y: auto;
+   566	  overscroll-behavior: contain;
+   567	  padding: 0 20px 8px;
+   568	  scrollbar-width: thin;
+   569	  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+   570	}
+   571	
+   572	.panel-body::-webkit-scrollbar {
+   573	  width: 5px;
+   574	}
+   575	
+   576	.panel-body::-webkit-scrollbar-thumb {
+   577	  background: rgba(255, 255, 255, 0.16);
+   578	  border-radius: 99px;
+   579	}
+   580	
+   581	/* ---------- Presets ---------- */
+   582	
+   583	.preset-row {
+   584	  display: grid;
+   585	  grid-template-columns: repeat(3, 1fr);
+   586	  gap: 8px;
+   587	  padding: 4px 0 2px;
+   588	}
+   589	
+   590	.preset {
+   591	  display: inline-flex;
+   592	  align-items: center;
+   593	  justify-content: center;
+   594	  gap: 6px;
+   595	  padding: 10px 4px;
+   596	  border: 1px solid var(--line);
+   597	  border-radius: 12px;
+   598	  background: rgba(255, 255, 255, 0.04);
+   599	  color: #e6e6ee;
+   600	  font-family: inherit;
+   601	  font-size: 12px;
+   602	  font-weight: 600;
+   603	  cursor: pointer;
+   604	  transition: border-color 0.2s, background 0.2s, transform 0.15s;
+   605	}
+   606	
+   607	.preset:active {
+   608	  transform: scale(0.97);
+   609	}
+   610	
+   611	.preset-dot {
+   612	  width: 6px;
+   613	  height: 6px;
+   614	  border-radius: 50%;
+   615	  background: var(--dot, var(--accent));
+   616	  box-shadow: 0 0 8px var(--dot, var(--accent));
+   617	  flex: 0 0 auto;
+   618	}
+   619	
+   620	/* ---------- Sections ---------- */
+   621	
+   622	.field-group {
+   623	  padding: 17px 0 15px;
+   624	  border-top: 1px solid var(--line);
+   625	}
+   626	
+   627	.field-group:first-of-type {
+   628	  border-top: 0;
+   629	}
+   630	
+   631	.group-head {
+   632	  display: flex;
+   633	  align-items: center;
+   634	  gap: 8px;
+   635	  margin-bottom: 11px;
+   636	}
+   637	
+   638	.idx {
+   639	  padding: 2px 5px;
+   640	  border: 1px solid rgba(255, 45, 149, 0.28);
+   641	  border-radius: 4px;
+   642	  background: rgba(255, 45, 149, 0.1);
+   643	  color: #ff6eb5;
+   644	  font-size: 9.5px;
+   645	  font-weight: 800;
+   646	  letter-spacing: 0.1em;
+   647	  line-height: 1.4;
+   648	}
+   649	
+   650	.group-head h2 {
+   651	  margin: 0;
+   652	  font-size: 13px;
+   653	  font-weight: 700;
+   654	  letter-spacing: 0.12em;
+   655	  color: #f2f2f7;
+   656	}
+   657	
+   658	.text-input {
+   659	  width: 100%;
+   660	  padding: 12px 13px;
+   661	  border: 1px solid var(--line-strong);
+   662	  border-radius: 12px;
+   663	  background: rgba(255, 255, 255, 0.045);
+   664	  color: #fff;
+   665	  font-family: inherit;
+   666	  font-size: 15px;
+   667	  line-height: 1.5;
+   668	  resize: none;
+   669	  outline: none;
+   670	  transition: border-color 0.2s, box-shadow 0.2s;
+   671	}
+   672	
+   673	.text-input::placeholder {
+   674	  color: var(--muted-2);
+   675	}
+   676	
+   677	.text-input:focus {
+   678	  border-color: rgba(255, 45, 149, 0.55);
+   679	  box-shadow: 0 0 0 3px rgba(255, 45, 149, 0.12);
+   680	}
+   681	
+   682	.chips {
+   683	  display: flex;
+   684	  gap: 7px;
+   685	  padding: 9px 0 6px;
+   686	  overflow-x: auto;
+   687	  scrollbar-width: none;
+   688	}
+   689	
+   690	.chips::-webkit-scrollbar {
+   691	  display: none;
+   692	}
+   693	
+   694	.chips button {
+   695	  flex: 0 0 auto;
+   696	  padding: 6px 11px;
+   697	  border: 1px solid var(--line);
+   698	  border-radius: 999px;
+   699	  background: rgba(255, 255, 255, 0.04);
+   700	  color: #c6c6d4;
+   701	  font-family: inherit;
+   702	  font-size: 11.5px;
+   703	  cursor: pointer;
+   704	  transition: border-color 0.2s, color 0.2s;
+   705	}
+   706	
+   707	.chips button:active {
+   708	  border-color: rgba(255, 255, 255, 0.3);
+   709	  color: #fff;
+   710	}
+   711	
+   712	.row {
+   713	  display: flex;
+   714	  align-items: baseline;
+   715	  justify-content: space-between;
+   716	  gap: 10px;
+   717	  margin-top: 13px;
+   718	}
+   719	
+   720	.row-label {
+   721	  font-size: 12px;
+   722	  font-weight: 600;
+   723	  color: var(--muted);
+   724	  letter-spacing: 0.04em;
+   725	}
+   726	
+   727	.row output {
+   728	  font-size: 12px;
+   729	  font-weight: 700;
+   730	  color: #fff;
+   731	  font-variant-numeric: tabular-nums;
+   732	}
+   733	
+   734	/* ---------- Segmented control ---------- */
+   735	
+   736	.seg {
+   737	  display: grid;
+   738	  gap: 4px;
+   739	  padding: 4px;
+   740	  border: 1px solid rgba(255, 255, 255, 0.05);
+   741	  border-radius: 12px;
+   742	  background: rgba(255, 255, 255, 0.045);
+   743	}
+   744	
+   745	.seg-font {
+   746	  grid-template-columns: repeat(5, 1fr);
+   747	}
+   748	
+   749	.seg-sound {
+   750	  grid-template-columns: repeat(2, 1fr);
+   751	  margin-top: 11px;
+   752	}
+   753	
+   754	.seg-btn {
+   755	  padding: 9px 3px;
+   756	  border: 0;
+   757	  border-radius: 9px;
+   758	  background: transparent;
+   759	  color: var(--muted);
+   760	  font-family: inherit;
+   761	  font-size: 12px;
+   762	  font-weight: 600;
+   763	  cursor: pointer;
+   764	  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+   765	}
+   766	
+   767	.seg-btn.is-active {
+   768	  background: linear-gradient(180deg, rgba(255, 255, 255, 0.17), rgba(255, 255, 255, 0.07));
+   769	  color: #fff;
+   770	  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+   771	}
+   772	
+   773	/* ---------- Range ---------- */
+   774	
+   775	.range {
+   776	  -webkit-appearance: none;
+   777	  appearance: none;
+   778	  display: block;
+   779	  width: 100%;
+   780	  height: 24px;
+   781	  margin: 4px 0 0;
+   782	  background: transparent;
+   783	  cursor: pointer;
+   784	  outline: none;
+   785	}
+   786	
+   787	.range::-webkit-slider-runnable-track {
+   788	  height: 4px;
+   789	  border-radius: 99px;
+   790	  background: linear-gradient(
+   791	    90deg,
+   792	    var(--accent) 0%,
+   793	    var(--accent-2) var(--p, 40%),
+   794	    rgba(255, 255, 255, 0.14) var(--p, 40%)
+   795	  );
+   796	}
+   797	
+   798	.range::-webkit-slider-thumb {
+   799	  -webkit-appearance: none;
+   800	  width: 18px;
+   801	  height: 18px;
+   802	  margin-top: -7px;
+   803	  border: 0;
+   804	  border-radius: 50%;
+   805	  background: #fff;
+   806	  box-shadow: 0 0 0 4px rgba(255, 45, 149, 0.16), 0 2px 8px rgba(0, 0, 0, 0.5);
+   807	}
+   808	
+   809	.range::-moz-range-track {
+   810	  height: 4px;
+   811	  border-radius: 99px;
+   812	  background: rgba(255, 255, 255, 0.14);
+   813	}
+   814	
+   815	.range::-moz-range-progress {
+   816	  height: 4px;
+   817	  border-radius: 99px;
+   818	  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+   819	}
+   820	
+   821	.range::-moz-range-thumb {
+   822	  width: 18px;
+   823	  height: 18px;
+   824	  border: 0;
+   825	  border-radius: 50%;
+   826	  background: #fff;
+   827	  box-shadow: 0 0 0 4px rgba(255, 45, 149, 0.16), 0 2px 8px rgba(0, 0, 0, 0.5);
+   828	}
+   829	
+   830	/* ---------- Switches ---------- */
+   831	
+   832	.switch-row {
+   833	  position: relative;
+   834	  display: flex;
+   835	  align-items: center;
+   836	  justify-content: space-between;
+   837	  gap: 14px;
+   838	  padding: 11px 0;
+   839	  border-bottom: 1px solid rgba(255, 255, 255, 0.055);
+   840	  cursor: pointer;
+   841	}
+   842	
+   843	.switch-row:last-of-type {
+   844	  border-bottom: 0;
+   845	}
+   846	
+   847	.switch-label {
+   848	  display: flex;
+   849	  flex-direction: column;
+   850	  gap: 3px;
+   851	  min-width: 0;
+   852	}
+   853	
+   854	.switch-name {
+   855	  font-size: 13.5px;
+   856	  font-weight: 600;
+   857	  color: #ececf3;
+   858	}
+   859	
+   860	.switch-desc {
+   861	  font-size: 11px;
+   862	  color: var(--muted-2);
+   863	  line-height: 1.4;
+   864	}
+   865	
+   866	.switch-row input {
+   867	  position: absolute;
+   868	  width: 1px;
+   869	  height: 1px;
+   870	  opacity: 0;
+   871	  pointer-events: none;
+   872	}
+   873	
+   874	.switch-ui {
+   875	  position: relative;
+   876	  width: 46px;
+   877	  height: 27px;
+   878	  flex: 0 0 auto;
+   879	  border: 1px solid rgba(255, 255, 255, 0.08);
+   880	  border-radius: 999px;
+   881	  background: rgba(255, 255, 255, 0.12);
+   882	  transition: background 0.25s, box-shadow 0.25s;
+   883	}
+   884	
+   885	.switch-ui::after {
+   886	  content: "";
+   887	  position: absolute;
+   888	  top: 3px;
+   889	  left: 3px;
+   890	  width: 19px;
+   891	  height: 19px;
+   892	  border-radius: 50%;
+   893	  background: #fff;
+   894	  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+   895	  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+   896	}
+   897	
+   898	.switch-row input:checked + .switch-ui {
+   899	  background: linear-gradient(90deg, var(--accent), #7c4dff);
+   900	  box-shadow: 0 0 16px rgba(255, 45, 149, 0.38);
+   901	}
+   902	
+   903	.switch-row input:checked + .switch-ui::after {
+   904	  transform: translateX(19px);
+   905	}
+   906	
+   907	.switch-row input:focus-visible + .switch-ui {
+   908	  outline: 2px solid var(--accent-2);
+   909	  outline-offset: 3px;
+   910	}
+   911	
+   912	.switch-row input:disabled + .switch-ui {
+   913	  opacity: 0.45;
+   914	}
+   915	
+   916	/* ---------- Colors ---------- */
+   917	
+   918	.color-row {
+   919	  display: flex;
+   920	  align-items: center;
+   921	  gap: 9px;
+   922	  margin-top: 9px;
+   923	  flex-wrap: wrap;
+   924	}
+   925	
+   926	.swatches {
+   927	  display: flex;
+   928	  gap: 8px;
+   929	  flex-wrap: wrap;
+   930	}
+   931	
+   932	.swatch {
+   933	  position: relative;
+   934	  width: 28px;
+   935	  height: 28px;
+   936	  padding: 0;
+   937	  border: 0;
+   938	  border-radius: 50%;
+   939	  background: var(--sw);
+   940	  cursor: pointer;
+   941	  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.16), 0 0 14px color-mix(in srgb, var(--sw) 55%, transparent);
+   942	  transition: transform 0.15s, box-shadow 0.2s;
+   943	}
+   944	
+   945	.swatch:active {
+   946	  transform: scale(0.9);
+   947	}
+   948	
+   949	.swatch.is-active {
+   950	  box-shadow:
+   951	    0 0 0 2px #fff,
+   952	    0 0 0 4px rgba(255, 255, 255, 0.22),
+   953	    0 0 18px var(--sw);
+   954	}
+   955	
+   956	.color-picker {
+   957	  display: inline-flex;
+   958	  flex-direction: column;
+   959	  align-items: center;
+   960	  gap: 4px;
+   961	  font-size: 10px;
+   962	  color: var(--muted-2);
+   963	  cursor: pointer;
+   964	}
+   965	
+   966	.color-picker input[type="color"] {
+   967	  width: 30px;
+   968	  height: 30px;
+   969	  padding: 0;
+   970	  border: 0;
+   971	  border-radius: 50%;
+   972	  background: transparent;
+   973	  cursor: pointer;
+   974	  overflow: hidden;
+   975	  -webkit-appearance: none;
+   976	  appearance: none;
+   977	}
+   978	
+   979	.color-picker input[type="color"]::-webkit-color-swatch-wrapper {
+   980	  padding: 0;
+   981	}
+   982	
+   983	.color-picker input[type="color"]::-webkit-color-swatch {
+   984	  border: 1px solid rgba(255, 255, 255, 0.25);
+   985	  border-radius: 50%;
+   986	}
+   987	
+   988	.color-picker input[type="color"]::-moz-color-swatch {
+   989	  border: 1px solid rgba(255, 255, 255, 0.25);
+   990	  border-radius: 50%;
+   991	}
+   992	
+   993	.hint {
+   994	  margin: 8px 0 0;
+   995	  font-size: 11px;
+   996	  line-height: 1.6;
+   997	  color: var(--muted-2);
+   998	}
+   999	
+  1000	.foot-note {
+  1001	  margin: 12px 0 4px;
+  1002	  padding-top: 13px;
+  1003	  border-top: 1px solid var(--line);
+  1004	  font-size: 10.5px;
+  1005	  line-height: 1.65;
+  1006	  color: var(--muted-2);
+  1007	}
+  1008	
+  1009	/* ---------- Footer ---------- */
+  1010	
+  1011	.panel-foot {
+  1012	  flex: 0 0 auto;
+  1013	  padding: 12px 20px calc(14px + env(safe-area-inset-bottom));
+  1014	  border-top: 1px solid var(--line);
+  1015	  background: linear-gradient(180deg, rgba(13, 15, 26, 0), rgba(10, 11, 20, 0.9) 40%);
+  1016	}
+  1017	
+  1018	.primary-btn {
+  1019	  display: flex;
+  1020	  align-items: center;
+  1021	  justify-content: center;
+  1022	  gap: 9px;
+  1023	  width: 100%;
+  1024	  height: 52px;
+  1025	  border: 0;
+  1026	  border-radius: 14px;
+  1027	  background: linear-gradient(115deg, #ff2d95, #7c4dff 55%, #4cc9f0);
+  1028	  color: #fff;
+  1029	  font-family: inherit;
+  1030	  font-size: 15px;
+  1031	  font-weight: 800;
+  1032	  letter-spacing: 0.08em;
+  1033	  cursor: pointer;
+  1034	  box-shadow: 0 10px 30px rgba(124, 77, 255, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  1035	  transition: transform 0.15s, box-shadow 0.2s;
+  1036	}
+  1037	
+  1038	.primary-btn:active {
+  1039	  transform: scale(0.985);
+  1040	  box-shadow: 0 5px 18px rgba(124, 77, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  1041	}
+  1042	
+  1043	/* ---------- Toast ---------- */
+  1044	
+  1045	.toast {
+  1046	  position: fixed;
+  1047	  left: 50%;
+  1048	  top: max(18px, calc(env(safe-area-inset-top) + 10px));
+  1049	  z-index: 60;
+  1050	  max-width: calc(100vw - 40px);
+  1051	  padding: 10px 16px;
+  1052	  border: 1px solid rgba(255, 255, 255, 0.14);
+  1053	  border-radius: 999px;
+  1054	  background: rgba(12, 14, 22, 0.94);
+  1055	  backdrop-filter: blur(14px);
+  1056	  -webkit-backdrop-filter: blur(14px);
+  1057	  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55);
+  1058	  color: #fff;
+  1059	  font-size: 12.5px;
+  1060	  line-height: 1.4;
+  1061	  text-align: center;
+  1062	  opacity: 0;
+  1063	  transform: translate(-50%, -14px);
+  1064	  pointer-events: none;
+  1065	  transition: opacity 0.26s ease, transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+  1066	}
+  1067	
+  1068	.toast.show {
+  1069	  opacity: 1;
+  1070	  transform: translate(-50%, 0);
+  1071	}
+  1072	
+  1073	#torchVideo {
+  1074	  position: fixed;
+  1075	  top: 0;
+  1076	  left: 0;
+  1077	  width: 1px;
+  1078	  height: 1px;
+  1079	  opacity: 0;
+  1080	  pointer-events: none;
+  1081	}
+  1082	
+  1083	@media (min-width: 760px) {
+  1084	  .panel {
+  1085	    width: 480px;
+  1086	  }
+  1087	}
+  1088	
+  1089	@media (max-height: 520px) {
+  1090	  .panel {
+  1091	    max-height: 94dvh;
+  1092	  }
+  1093	
+  1094	  .panel-head {
+  1095	    padding-top: 6px;
+  1096	    padding-bottom: 8px;
+  1097	  }
+  1098	
+  1099	  .brand-mark {
+  1100	    width: 32px;
+  1101	    height: 32px;
+  1102	    font-size: 16px;
+  1103	  }
+  1104	}
+
+>>> js/app.js <<<
+     1	(() => {
+     2	  'use strict';
+     3	
+     4	  const $ = (selector) => document.querySelector(selector);
+     5	  const $$ = (selector) => Array.from(document.querySelectorAll(selector));
+     6	
+     7	  const STORAGE_KEY = 'textshow:v1';
+     8	
+     9	  const FONTS = {
+    10	    heavy: { family: '"Arial Black", "Helvetica Neue", Impact, system-ui, sans-serif', weight: '900' },
+    11	    sans: { family: 'system-ui, -apple-system, "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif', weight: '800' },
+    12	    serif: { family: '"Songti SC", "Noto Serif SC", Georgia, "Times New Roman", serif', weight: '700' },
+    13	    mono: { family: '"SF Mono", Consolas, "Courier New", "Noto Sans Mono", monospace', weight: '800' },
+    14	    round: { family: 'ui-rounded, "SF Pro Rounded", "PingFang SC", "Noto Sans SC", sans-serif', weight: '800' }
+    15	  };
+    16	
+    17	  const SOUND_LABELS = {
+    18	    alarm: '高频警报',
+    19	    siren: '警笛',
+    20	    urgent: '急促哔声',
+    21	    steady: '持续鸣响'
+    22	  };
+    23	
+    24	  const PRESETS = {
+    25	    concert: {
+    26	      text: '一起唱！',
+    27	      font: 'heavy',
+    28	      fontSize: 26,
+    29	      color: '#ff2d95',
+    30	      glow: true,
+    31	      textFlash: false,
+    32	      bounce: true,
+    33	      marquee: true,
+    34	      rainbow: true,
+    35	      speed: 1.4,
+    36	      bgColor: '#07030b',
+    37	      flashColor: '#2b0a3f',
+    38	      bgFlash: true,
+    39	      bgHz: 2.5
+    40	    },
+    41	    emergency: {
+    42	      text: '车辆故障\n请绕行',
+    43	      font: 'heavy',
+    44	      fontSize: 30,
+    45	      color: '#ffffff',
+    46	      glow: true,
+    47	      textFlash: false,
+    48	      bounce: false,
+    49	      marquee: false,
+    50	      rainbow: false,
+    51	      speed: 1,
+    52	      bgColor: '#05060c',
+    53	      flashColor: '#ff3b30',
+    54	      bgFlash: true,
+    55	      bgHz: 2
+    56	    },
+    57	    clean: {
+    58	      text: 'TEXTSHOW',
+    59	      font: 'heavy',
+    60	      fontSize: 22,
+    61	      color: '#ffffff',
+    62	      glow: true,
+    63	      textFlash: false,
+    64	      bounce: false,
+    65	      marquee: false,
+    66	      rainbow: false,
+    67	      speed: 1,
+    68	      bgColor: '#05060c',
+    69	      flashColor: '#ff2d95',
+    70	      bgFlash: false,
+    71	      bgHz: 4
+    72	    }
+    73	  };
+    74	
+    75	  const DEFAULTS = {
+    76	    text: 'TEXTSHOW',
+    77	    font: 'heavy',
+    78	    fontSize: 20,
+    79	    color: '#ffffff',
+    80	    glow: true,
+    81	    textFlash: false,
+    82	    bounce: true,
+    83	    marquee: false,
+    84	    rainbow: false,
+    85	    speed: 1,
+    86	    bgColor: '#05060c',
+    87	    flashColor: '#ff2d95',
+    88	    bgFlash: false,
+    89	    alertStripe: false,
+    90	    bgHz: 4,
+    91	    torchHz: 8,
+    92	    soundPattern: 'alarm',
+    93	    volume: 40
+    94	  };
+    95	
+    96	  const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+    97	
+    98	  const toNumber = (value, fallback, min, max) => {
+    99	    const number = Number(value);
+   100	    return Number.isFinite(number) ? clamp(number, min, max) : fallback;
+   101	  };
+   102	
+   103	  const isHex = (value) => typeof value === 'string' && /^#[0-9a-f]{6}$/i.test(value);
+   104	
+   105	  const fmtHz = (value) => `${Number(value).toFixed(1)} Hz`;
+   106	
+   107	  const state = { ...DEFAULTS };
+   108	
+   109	  const stage = $('#stage');
+   110	  const stageBg = $('#stageBg');
+   111	  const marquee = $('#marquee');
+   112	  const marqueeTrack = $('#marqueeTrack');
+   113	  const displayText = $('#displayText');
+   114	  const displayTextClone = $('#displayTextClone');
+   115	  const panel = $('#panel');
+   116	  const panelBackdrop = $('#panelBackdrop');
+   117	  const openPanelBtn = $('#openPanel');
+   118	  const startShowBtn = $('#startShow');
+   119	  const toastEl = $('#toast');
+   120	
+   121	  const textInput = $('#textInput');
+   122	  const sizeRange = $('#sizeRange');
+   123	  const sizeOut = $('#sizeOut');
+   124	  const speedRange = $('#speedRange');
+   125	  const speedOut = $('#speedOut');
+   126	  const bgHzRange = $('#bgHzRange');
+   127	  const bgHzOut = $('#bgHzOut');
+   128	  const torchHzRange = $('#torchHzRange');
+   129	  const torchHzOut = $('#torchHzOut');
+   130	  const volumeRange = $('#volumeRange');
+   131	  const volumeOut = $('#volumeOut');
+   132	  const textColorInput = $('#textColor');
+   133	  const bgColorInput = $('#bgColor');
+   134	  const flashColorInput = $('#flashColor');
+   135	  const torchSwitch = $('#torchSwitch');
+   136	  const soundSwitch = $('#soundSwitch');
+   137	  const torchPill = $('#torchPill');
+   138	  const soundPill = $('#soundPill');
+   139	
+   140	  const PLAY_ICON = '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg>';
+   141	  const EXIT_ICON = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5"></path></svg>';
+   142	
+   143	  let toastTimer = 0;
+   144	  let wakeLock = null;
+   145	  let fittedFontSize = state.fontSize;
+   146	  let resizeFrame = 0;
+   147	
+   148	  /* ---------- Stage rendering ---------- */
+   149	
+   150	  function fitStageText() {
+   151	    fittedFontSize = state.fontSize;
+   152	    stage.style.setProperty('--font-size', `${state.fontSize}vmin`);
+   153	
+   154	    if (state.marquee) return;
+   155	
+   156	    const styles = getComputedStyle(stage);
+   157	    const availableWidth =
+   158	      stage.clientWidth - parseFloat(styles.paddingLeft) - parseFloat(styles.paddingRight) - 4;
+   159	    const availableHeight = stage.clientHeight - parseFloat(styles.paddingTop) - parseFloat(styles.paddingBottom);
+   160	
+   161	    for (let i = 0; i < 4; i += 1) {
+   162	      const width = displayText.scrollWidth;
+   163	      const height = displayText.scrollHeight;
+   164	      const ratio = Math.min(availableWidth / Math.max(1, width), availableHeight / Math.max(1, height), 1);
+   165	      if (ratio > 0.995) break;
+   166	      fittedFontSize = Math.max(4, fittedFontSize * Math.max(0.3, ratio) * 0.985);
+   167	      stage.style.setProperty('--font-size', `${fittedFontSize}vmin`);
+   168	    }
+   169	  }
+   170	
+   171	  function updateSizeOutput() {
+   172	    if (fittedFontSize < state.fontSize - 0.2) {
+   173	      sizeOut.textContent = `${state.fontSize} → ${fittedFontSize.toFixed(1)}`;
+   174	      sizeOut.title = '长文本已自动缩小以完整显示';
+   175	    } else {
+   176	      sizeOut.textContent = String(state.fontSize);
+   177	      sizeOut.removeAttribute('title');
+   178	    }
+   179	  }
+   180	
+   181	  function applyStage() {
+   182	    stage.style.setProperty('--text', state.color);
+   183	    stage.style.setProperty('--speed', String(state.speed));
+   184	    stage.style.setProperty('--bg', state.bgColor);
+   185	    stage.style.setProperty('--flash', state.flashColor);
+   186	    stageBg.style.animationDuration = `${(1 / state.bgHz).toFixed(3)}s`;
+   187	
+   188	    // Mutually exclusive visual modes
+   189	    if (state.alertStripe) {
+   190	      alertStripes.start();
+   191	      stage.classList.remove('flash-bg');
+   192	    } else {
+   193	      alertStripes.stop();
+   194	      stage.classList.toggle('flash-bg', state.bgFlash);
+   195	    }
+   196	
+   197	    const font = FONTS[state.font] || FONTS.heavy;
+   198	    const raw = state.text.length ? state.text : 'TEXTSHOW';
+   199	    const display = state.marquee ? raw.replace(/\s*\n+\s*/g, ' ') : raw;
+   200	
+   201	    displayText.textContent = display;
+   202	    displayTextClone.textContent = display;
+   203	    marquee.classList.toggle('on', state.marquee);
+   204	
+   205	    [displayText, displayTextClone].forEach((node) => {
+   206	      node.classList.toggle('glow', state.glow);
+   207	      node.classList.toggle('rainbow', state.rainbow);
+   208	      node.style.fontFamily = font.family;
+   209	      node.style.fontWeight = font.weight;
+   210	      node.style.color = state.rainbow ? 'transparent' : state.color;
+   211	      node.style.setProperty('--glow', state.color);
+   212	    });
+   213	
+   214	    const animations = [];
+   215	    if (state.bounce) {
+   216	      animations.push(`bounce ${(0.9 / state.speed).toFixed(2)}s ease-in-out infinite`);
+   217	    }
+   218	    if (state.textFlash) {
+   219	      animations.push(`textFlash ${(0.8 / state.speed).toFixed(2)}s steps(1, end) infinite`);
+   220	    }
+   221	    if (state.rainbow) {
+   222	      animations.push(`rainbow ${(4 / state.speed).toFixed(2)}s linear infinite`);
+   223	    }
+   224	    const animation = animations.join(', ');
+   225	    displayText.style.animation = animation;
+   226	    displayTextClone.style.animation = animation;
+   227	
+   228	    const duration = Math.max(6, display.length * 0.55) / state.speed;
+   229	    marqueeTrack.style.animationDuration = `${duration.toFixed(2)}s`;
+   230	
+   231	    fitStageText();
+   232	    updateSizeOutput();
+   233	  }
+   234	
+   235	  /* ---------- Controls ---------- */
+   236	
+   237	  function fillRange(input) {
+   238	    const min = Number(input.min);
+   239	    const max = Number(input.max);
+   240	    const value = Number(input.value);
+   241	    const percent = max > min ? ((value - min) / (max - min)) * 100 : 0;
+   242	    input.style.setProperty('--p', `${percent}%`);
+   243	  }
+   244	
+   245	  function syncSwatches() {
+   246	    $$('#textSwatches .swatch').forEach((swatch) => {
+   247	      swatch.classList.toggle('is-active', swatch.dataset.color.toLowerCase() === state.color.toLowerCase());
+   248	    });
+   249	  }
+   250	
+   251	  function updateStageStatus() {
+   252	    torchPill.hidden = !torch.active;
+   253	    soundPill.hidden = !soundEngine.active;
+   254	    torchPill.textContent = torch.active ? `闪光灯 ${fmtHz(state.torchHz)}` : '';
+   255	    soundPill.textContent = soundEngine.active ? `警示音 ${SOUND_LABELS[state.soundPattern]}` : '';
+   256	  }
+   257	
+   258	  function syncControls() {
+   259	    textInput.value = state.text;
+   260	
+   261	    $$('#fontSeg .seg-btn').forEach((button) => {
+   262	      button.classList.toggle('is-active', button.dataset.font === state.font);
+   263	    });
+   264	
+   265	    sizeRange.value = String(state.fontSize);
+   266	    sizeOut.textContent = String(state.fontSize);
+   267	    fillRange(sizeRange);
+   268	
+   269	    speedRange.value = String(state.speed);
+   270	    speedOut.textContent = `${state.speed.toFixed(1)}×`;
+   271	    fillRange(speedRange);
+   272	
+   273	    bgHzRange.value = String(state.bgHz);
+   274	    bgHzOut.textContent = fmtHz(state.bgHz);
+   275	    fillRange(bgHzRange);
+   276	
+   277	    torchHzRange.value = String(state.torchHz);
+   278	    torchHzOut.textContent = fmtHz(state.torchHz);
+   279	    fillRange(torchHzRange);
+   280	
+   281	    volumeRange.value = String(state.volume);
+   282	    volumeOut.textContent = String(state.volume);
+   283	    fillRange(volumeRange);
+   284	
+   285	    textColorInput.value = state.color;
+   286	    bgColorInput.value = state.bgColor;
+   287	    flashColorInput.value = state.flashColor;
+   288	    syncSwatches();
+   289	
+   290	    $('#fxGlow').checked = state.glow;
+   291	    $('#fxFlash').checked = state.textFlash;
+   292	    $('#fxBounce').checked = state.bounce;
+   293	    $('#fxMarquee').checked = state.marquee;
+   294	    $('#fxRainbow').checked = state.rainbow;
+   295	    $('#bgFlash').checked = state.bgFlash;
+   296	    $('#alertStripe').checked = state.alertStripe;
+   297	
+   298	    torchSwitch.checked = torch.active;
+   299	    soundSwitch.checked = soundEngine.active;
+   300	
+   301	    $$('#soundSeg .seg-btn').forEach((button) => {
+   302	      button.classList.toggle('is-active', button.dataset.sound === state.soundPattern);
+   303	    });
+   304	
+   305	    updateStageStatus();
+   306	  }
+   307	
+   308	  function persist() {
+   309	    const payload = {
+   310	      text: state.text,
+   311	      font: state.font,
+   312	      fontSize: state.fontSize,
+   313	      color: state.color,
+   314	      glow: state.glow,
+   315	      textFlash: state.textFlash,
+   316	      bounce: state.bounce,
+   317	      marquee: state.marquee,
+   318	      rainbow: state.rainbow,
+   319	      speed: state.speed,
+   320	      bgColor: state.bgColor,
+   321	      flashColor: state.flashColor,
+   322	      bgFlash: state.bgFlash,
+   323	      alertStripe: state.alertStripe,
+   324	      bgHz: state.bgHz,
+   325	      torchHz: state.torchHz,
+   326	      soundPattern: state.soundPattern,
+   327	      volume: state.volume
+   328	    };
+   329	    try {
+   330	      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+   331	    } catch (error) {
+   332	      /* storage may be unavailable */
+   333	    }
+   334	  }
+   335	
+   336	  function loadState() {
+   337	    let saved = null;
+   338	    try {
+   339	      saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+   340	    } catch (error) {
+   341	      saved = null;
+   342	    }
+   343	    if (saved && typeof saved === 'object') {
+   344	      Object.keys(DEFAULTS).forEach((key) => {
+   345	        if (saved[key] !== undefined) state[key] = saved[key];
+   346	      });
+   347	    }
+   348	
+   349	    state.text = String(state.text ?? '').slice(0, 120);
+   350	    state.font = FONTS[state.font] ? state.font : 'heavy';
+   351	    state.fontSize = toNumber(state.fontSize, 20, 6, 40);
+   352	    state.speed = toNumber(state.speed, 1, 0.3, 3);
+   353	    state.bgHz = toNumber(state.bgHz, 4, 0.5, 12);
+   354	    state.torchHz = toNumber(state.torchHz, 8, 0.5, 20);
+   355	    state.volume = toNumber(state.volume, 40, 0, 100);
+   356	    state.color = isHex(state.color) ? state.color : '#ffffff';
+   357	    state.bgColor = isHex(state.bgColor) ? state.bgColor : '#05060c';
+   358	    state.flashColor = isHex(state.flashColor) ? state.flashColor : '#ff2d95';
+   359	    state.soundPattern = SOUND_LABELS[state.soundPattern] ? state.soundPattern : 'alarm';
+   360	    ['glow', 'textFlash', 'bounce', 'marquee', 'rainbow', 'bgFlash', 'alertStripe'].forEach((key) => {
+   361	      state[key] = Boolean(state[key]);
+   362	    });
+   363	  }
+   364	
+   365	  /* ---------- Panel ---------- */
+   366	
+   367	  function openPanel() {
+   368	    panel.classList.add('open');
+   369	    panelBackdrop.classList.add('show');
+   370	    panel.setAttribute('aria-hidden', 'false');
+   371	    openPanelBtn.setAttribute('aria-expanded', 'true');
+   372	  }
+   373	
+   374	  function closePanel() {
+   375	    panel.classList.remove('open');
+   376	    panelBackdrop.classList.remove('show');
+   377	    panel.setAttribute('aria-hidden', 'true');
+   378	    openPanelBtn.setAttribute('aria-expanded', 'false');
+   379	  }
+   380	
+   381	  function toast(message) {
+   382	    toastEl.textContent = message;
+   383	    toastEl.classList.add('show');
+   384	    clearTimeout(toastTimer);
+   385	    toastTimer = window.setTimeout(() => {
+   386	      toastEl.classList.remove('show');
+   387	    }, 2600);
+   388	  }
+   389	
+   390	  /* ---------- Fullscreen & wake lock ---------- */
+   391	
+   392	  async function acquireWakeLock() {
+   393	    if (!('wakeLock' in navigator) || wakeLock || document.hidden) return;
+   394	    try {
+   395	      wakeLock = await navigator.wakeLock.request('screen');
+   396	      wakeLock.addEventListener('release', () => {
+   397	        wakeLock = null;
+   398	      });
+   399	    } catch (error) {
+   400	      wakeLock = null;
+   401	    }
+   402	  }
+   403	
+   404	  function updateShowButton() {
+   405	    const isFullscreen = Boolean(document.fullscreenElement);
+   406	    startShowBtn.innerHTML = `${isFullscreen ? EXIT_ICON : PLAY_ICON}<span>${isFullscreen ? '退出全屏' : '开始演出'}</span>`;
+   407	  }
+   408	
+   409	  async function toggleFullscreen() {
+   410	    if (document.fullscreenElement) {
+   411	      try {
+   412	        await document.exitFullscreen();
+   413	      } catch (error) {
+   414	        /* ignore */
+   415	      }
+   416	      return;
+   417	    }
+   418	    const root = document.documentElement;
+   419	    if (!root.requestFullscreen || document.fullscreenEnabled === false) {
+   420	      toast('当前浏览器不支持全屏，可直接横屏使用');
+   421	      return;
+   422	    }
+   423	    try {
+   424	      await root.requestFullscreen({ navigationUI: 'hide' });
+   425	    } catch (error) {
+   426	      toast('无法进入全屏，可直接横屏使用');
+   427	    }
+   428	  }
+   429	
+   430	  /* ---------- Torch ---------- */
+   431	
+   432	  const torch = {
+   433	    stream: null,
+   434	    track: null,
+   435	    timer: null,
+   436	    lit: false,
+   437	    active: false,
+   438	
+   439	    async start(hz) {
+   440	      if (!window.isSecureContext) {
+   441	        throw new Error('需要 HTTPS 或 localhost 才能调用闪光灯');
+   442	      }
+   443	      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+   444	        throw new Error('当前浏览器不支持摄像头调用');
+   445	      }
+   446	
+   447	      if (!this.stream) {
+   448	        let stream = null;
+   449	        try {
+   450	          stream = await navigator.mediaDevices.getUserMedia({
+   451	            video: { facingMode: { ideal: 'environment' } },
+   452	            audio: false
+   453	          });
+   454	        } catch (error) {
+   455	          if (error && error.name === 'NotAllowedError') {
+   456	            throw new Error('未获得摄像头权限，请在浏览器设置中允许后重试');
+   457	          }
+   458	          if (error && error.name === 'NotFoundError') {
+   459	            throw new Error('未检测到可用的摄像头');
+   460	          }
+   461	          throw new Error('无法打开摄像头，请检查权限');
+   462	        }
+   463	        this.stream = stream;
+   464	        this.track = stream.getVideoTracks()[0];
+   465	        const video = $('#torchVideo');
+   466	        video.srcObject = stream;
+   467	        try {
+   468	          await video.play();
+   469	        } catch (error) {
+   470	          /* hidden video may not need playback */
+   471	        }
+   472	      }
+   473	
+   474	      const capabilities = this.track.getCapabilities ? this.track.getCapabilities() : {};
+   475	      if (!capabilities || !capabilities.torch) {
+   476	        await this.stop();
+   477	        throw new Error('此浏览器不支持手电筒控制，iOS 请使用系统手电筒');
+   478	      }
+   479	
+   480	      this.active = true;
+   481	      this.lit = true;
+   482	      await this.applyTorch(true);
+   483	      this.restart(hz);
+   484	    },
+   485	
+   486	    async applyTorch(on) {
+   487	      if (!this.track) return;
+   488	      try {
+   489	        await this.track.applyConstraints({ advanced: [{ torch: on }] });
+   490	      } catch (error) {
+   491	        /* some devices reject rapid constraint changes */
+   492	      }
+   493	    },
+   494	
+   495	    restart(hz) {
+   496	      if (this.timer) {
+   497	        clearInterval(this.timer);
+   498	        this.timer = null;
+   499	      }
+   500	      const halfPeriod = Math.max(20, 500 / hz);
+   501	      this.timer = setInterval(() => {
+   502	        if (!this.active) return;
+   503	        this.lit = !this.lit;
+   504	        this.applyTorch(this.lit);
+   505	      }, halfPeriod);
+   506	    },
+   507	
+   508	    async stop() {
+   509	      this.active = false;
+   510	      if (this.timer) {
+   511	        clearInterval(this.timer);
+   512	        this.timer = null;
+   513	      }
+   514	      if (this.track) {
+   515	        await this.applyTorch(false);
+   516	      }
+   517	      this.track = null;
+   518	      if (this.stream) {
+   519	        this.stream.getTracks().forEach((track) => {
+   520	          try {
+   521	            track.stop();
+   522	          } catch (error) {
+   523	            /* ignore */
+   524	          }
+   525	        });
+   526	      }
+   527	      this.stream = null;
+   528	      const video = $('#torchVideo');
+   529	      try {
+   530	        video.srcObject = null;
+   531	      } catch (error) {
+   532	        /* ignore */
+   533	      }
+   534	    }
+   535	  };
+   536	
+   537	  /* ---------- Sound ---------- */
+   538	
+   539	  class SoundEngine {
+   540	    constructor() {
+   541	      this.ctx = null;
+   542	      this.master = null;
+   543	      this.timer = null;
+   544	      this.nodes = [];
+   545	      this.active = false;
+   546	    }
+   547	
+   548	    async init() {
+   549	      if (!this.ctx) {
+   550	        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+   551	        if (!AudioContextClass) throw new Error('当前浏览器不支持音频播放');
+   552	        this.ctx = new AudioContextClass();
+   553	        const compressor = this.ctx.createDynamicsCompressor();
+   554	        compressor.threshold.value = -16;
+   555	        compressor.knee.value = 20;
+   556	        compressor.ratio.value = 8;
+   557	        compressor.attack.value = 0.003;
+   558	        compressor.release.value = 0.15;
+   559	        this.master = this.ctx.createGain();
+   560	        this.master.gain.value = 0;
+   561	        this.master.connect(compressor);
+   562	        compressor.connect(this.ctx.destination);
+   563	      }
+   564	      if (this.ctx.state === 'suspended') {
+   565	        await this.ctx.resume();
+   566	      }
+   567	    }
+   568	
+   569	    level(volume) {
+   570	      return clamp(Math.pow(clamp(volume, 0, 1), 1.7) * 0.9, 0, 1);
+   571	    }
+   572	
+   573	    async start(pattern, volume) {
+   574	      await this.init();
+   575	      this.halt();
+   576	      this.active = true;
+   577	      const now = this.ctx.currentTime;
+   578	      this.master.gain.cancelScheduledValues(now);
+   579	      this.master.gain.setValueAtTime(this.level(volume), now);
+   580	
+   581	      if (pattern === 'siren') {
+   582	        this.startSiren();
+   583	      } else if (pattern === 'steady') {
+   584	        this.startSteady();
+   585	      } else {
+   586	        this.startBeeps(pattern === 'urgent');
+   587	      }
+   588	    }
+   589	
+   590	    halt() {
+   591	      this.active = false;
+   592	      if (this.timer) {
+   593	        clearInterval(this.timer);
+   594	        this.timer = null;
+   595	      }
+   596	      this.nodes.forEach((node) => {
+   597	        if (typeof node.stop === 'function') {
+   598	          try {
+   599	            node.stop();
+   600	          } catch (error) {
+   601	            /* ignore */
+   602	          }
+   603	        }
+   604	        try {
+   605	          node.disconnect();
+   606	        } catch (error) {
+   607	          /* ignore */
+   608	        }
+   609	      });
+   610	      this.nodes = [];
+   611	      if (this.ctx && this.master) {
+   612	        const now = this.ctx.currentTime;
+   613	        this.master.gain.cancelScheduledValues(now);
+   614	        this.master.gain.setValueAtTime(0, now);
+   615	      }
+   616	    }
+   617	
+   618	    stop() {
+   619	      this.halt();
+   620	    }
+   621	
+   622	    setVolume(volume) {
+   623	      if (!this.ctx || !this.master) return;
+   624	      const now = this.ctx.currentTime;
+   625	      this.master.gain.cancelScheduledValues(now);
+   626	      this.master.gain.setTargetAtTime(this.level(volume), now, 0.04);
+   627	    }
+   628	
+   629	    beep(frequency, duration) {
+   630	      const ctx = this.ctx;
+   631	      const now = ctx.currentTime;
+   632	      const osc = ctx.createOscillator();
+   633	      const filter = ctx.createBiquadFilter();
+   634	      const gain = ctx.createGain();
+   635	
+   636	      osc.type = 'square';
+   637	      osc.frequency.setValueAtTime(frequency, now);
+   638	
+   639	      filter.type = 'lowpass';
+   640	      filter.frequency.setValueAtTime(Math.min(7000, frequency * 2.2), now);
+   641	
+   642	      gain.gain.setValueAtTime(0.0001, now);
+   643	      gain.gain.linearRampToValueAtTime(0.16, now + 0.006);
+   644	      gain.gain.setValueAtTime(0.16, now + Math.max(0.01, duration - 0.015));
+   645	      gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+   646	
+   647	      osc.connect(filter);
+   648	      filter.connect(gain);
+   649	      gain.connect(this.master);
+   650	      osc.start(now);
+   651	      osc.stop(now + duration + 0.02);
+   652	      osc.onended = () => {
+   653	        try {
+   654	          osc.disconnect();
+   655	          filter.disconnect();
+   656	          gain.disconnect();
+   657	        } catch (error) {
+   658	          /* ignore */
+   659	        }
+   660	      };
+   661	    }
+   662	
+   663	    startBeeps(urgent) {
+   664	      const frequency = urgent ? 3100 : 2600;
+   665	      const duration = urgent ? 0.07 : 0.16;
+   666	      const period = urgent ? 0.15 : 0.42;
+   667	      const tick = () => {
+   668	        if (this.active) this.beep(frequency, duration);
+   669	      };
+   670	      tick();
+   671	      this.timer = setInterval(tick, period * 1000);
+   672	    }
+   673	
+   674	    startSiren() {
+   675	      const ctx = this.ctx;
+   676	      const osc = ctx.createOscillator();
+   677	      const filter = ctx.createBiquadFilter();
+   678	      const gain = ctx.createGain();
+   679	
+   680	      osc.type = 'triangle';
+   681	      filter.type = 'lowpass';
+   682	      filter.frequency.value = 5000;
+   683	      gain.gain.value = 0.13;
+   684	
+   685	      let rising = true;
+   686	      const sweep = () => {
+   687	        const now = ctx.currentTime;
+   688	        osc.frequency.cancelScheduledValues(now);
+   689	        osc.frequency.setValueAtTime(rising ? 750 : 1750, now);
+   690	        osc.frequency.exponentialRampToValueAtTime(rising ? 1750 : 750, now + 0.62);
+   691	        rising = !rising;
+   692	      };
+   693	
+   694	      osc.connect(filter);
+   695	      filter.connect(gain);
+   696	      gain.connect(this.master);
+   697	      sweep();
+   698	      osc.start();
+   699	      this.nodes.push(osc, gain, filter);
+   700	      this.timer = setInterval(sweep, 660);
+   701	    }
+   702	
+   703	    startSteady() {
+   704	      const ctx = this.ctx;
+   705	      const osc = ctx.createOscillator();
+   706	      const filter = ctx.createBiquadFilter();
+   707	      const gain = ctx.createGain();
+   708	      const lfo = ctx.createOscillator();
+   709	      const lfoGain = ctx.createGain();
+   710	
+   711	      osc.type = 'square';
+   712	      osc.frequency.value = 2350;
+   713	      filter.type = 'lowpass';
+   714	      filter.frequency.value = 6000;
+   715	      gain.gain.value = 0.09;
+   716	
+   717	      lfo.type = 'sine';
+   718	      lfo.frequency.value = 6;
+   719	      lfoGain.gain.value = 0.035;
+   720	
+   721	      osc.connect(filter);
+   722	      filter.connect(gain);
+   723	      gain.connect(this.master);
+   724	      lfo.connect(lfoGain);
+   725	      lfoGain.connect(gain.gain);
+   726	
+   727	      osc.start();
+   728	      lfo.start();
+   729	      this.nodes.push(osc, gain, filter, lfo, lfoGain);
+   730	    }
+   731	  }
+   732	
+   733	  const soundEngine = new SoundEngine();
+   734	
+   735	  /* ---------- Three-stripe alert ---------- */
+   736	  // Cycle: stripe0 on → gap → stripe1 on → gap → stripe2 on → gap → loop
+   737	  // Each lit phase ~240ms, gap ~70ms → full cycle ~930ms (~1.08 Hz)
+   738	  const alertStripes = {
+   739	    timer: null,
+   740	    active: false,
+   741	    // 0=red, 1=amber, 2=white, 3=gap (all off faint edge only)
+   742	    seq: [0, 3, 1, 3, 2, 3],
+   743	    step: 0,
+   744	
+   745	    start() {
+   746	      if (this.active) return;
+   747	      this.active = true;
+   748	      stage.classList.add('alert');
+   749	      this.step = 0;
+   750	      this.tick();
+   751	      this.timer = setInterval(() => this.tick(), 240);
+   752	    },
+   753	
+   754	    tick() {
+   755	      const idx = this.seq[this.step % this.seq.length];
+   756	      stage.setAttribute('data-strip', String(idx));
+   757	      this.step += 1;
+   758	    },
+   759	
+   760	    stop() {
+   761	      if (this.timer) {
+   762	        clearInterval(this.timer);
+   763	        this.timer = null;
+   764	      }
+   765	      this.active = false;
+   766	      stage.classList.remove('alert');
+   767	      stage.removeAttribute('data-strip');
+   768	    }
+   769	  };
+   770	
+   771	  /* ---------- Events ---------- */
+   772	
+   773	  function bindSwitch(id, key) {
+   774	    const input = $(`#${id}`);
+   775	    input.addEventListener('change', () => {
+   776	      state[key] = input.checked;
+   777	      applyStage();
+   778	      persist();
+   779	    });
+   780	  }
+   781	
+   782	  function bindRange(input, output, key, format, onInput) {
+   783	    input.addEventListener('input', () => {
+   784	      state[key] = Number(input.value);
+   785	      output.textContent = format(state[key]);
+   786	      fillRange(input);
+   787	      applyStage();
+   788	      if (onInput) onInput();
+   789	      persist();
+   790	    });
+   791	  }
+   792	
+   793	  function bindEvents() {
+   794	    textInput.addEventListener('input', () => {
+   795	      state.text = textInput.value.slice(0, 120);
+   796	      applyStage();
+   797	      persist();
+   798	    });
+   799	
+   800	    $$('#phraseChips button').forEach((button) => {
+   801	      button.addEventListener('click', () => {
+   802	        state.text = button.dataset.phrase;
+   803	        textInput.value = state.text;
+   804	        applyStage();
+   805	        persist();
+   806	      });
+   807	    });
+   808	
+   809	    $$('#fontSeg .seg-btn').forEach((button) => {
+   810	      button.addEventListener('click', () => {
+   811	        state.font = button.dataset.font;
+   812	        $$('#fontSeg .seg-btn').forEach((item) => {
+   813	          item.classList.toggle('is-active', item === button);
+   814	        });
+   815	        applyStage();
+   816	        persist();
+   817	      });
+   818	    });
+   819	
+   820	    bindRange(sizeRange, sizeOut, 'fontSize', (value) => String(value));
+   821	    bindRange(speedRange, speedOut, 'speed', (value) => `${value.toFixed(1)}×`);
+   822	    bindRange(bgHzRange, bgHzOut, 'bgHz', fmtHz);
+   823	
+   824	    bindSwitch('fxGlow', 'glow');
+   825	    bindSwitch('fxFlash', 'textFlash');
+   826	    bindSwitch('fxBounce', 'bounce');
+   827	    bindSwitch('fxMarquee', 'marquee');
+   828	    bindSwitch('fxRainbow', 'rainbow');
+   829	    // Mutually exclusive visual modes
+   830	    $('#bgFlash').addEventListener('change', () => {
+   831	      state.bgFlash = $('#bgFlash').checked;
+   832	      if (state.bgFlash && state.alertStripe) {
+   833	        state.alertStripe = false;
+   834	        $('#alertStripe').checked = false;
+   835	      }
+   836	      applyStage();
+   837	      persist();
+   838	    });
+   839	
+   840	    $('#alertStripe').addEventListener('change', () => {
+   841	      state.alertStripe = $('#alertStripe').checked;
+   842	      if (state.alertStripe && state.bgFlash) {
+   843	        state.bgFlash = false;
+   844	        $('#bgFlash').checked = false;
+   845	      }
+   846	      applyStage();
+   847	      persist();
+   848	    });
+   849	
+   850	    $$('#textSwatches .swatch').forEach((swatch) => {
+   851	      swatch.addEventListener('click', () => {
+   852	        state.color = swatch.dataset.color;
+   853	        textColorInput.value = state.color;
+   854	        syncSwatches();
+   855	        applyStage();
+   856	        persist();
+   857	      });
+   858	    });
+   859	
+   860	    textColorInput.addEventListener('input', () => {
+   861	      state.color = textColorInput.value;
+   862	      syncSwatches();
+   863	      applyStage();
+   864	      persist();
+   865	    });
+   866	
+   867	    bgColorInput.addEventListener('input', () => {
+   868	      state.bgColor = bgColorInput.value;
+   869	      applyStage();
+   870	      persist();
+   871	    });
+   872	
+   873	    flashColorInput.addEventListener('input', () => {
+   874	      state.flashColor = flashColorInput.value;
+   875	      applyStage();
+   876	      persist();
+   877	    });
+   878	
+   879	    let torchRequestId = 0;
+   880	    torchSwitch.addEventListener('change', async () => {
+   881	      const requestId = ++torchRequestId;
+   882	      if (torchSwitch.checked) {
+   883	        torchSwitch.disabled = true;
+   884	        try {
+   885	          await torch.start(state.torchHz);
+   886	          if (requestId !== torchRequestId) {
+   887	            await torch.stop();
+   888	          } else {
+   889	            toast(`闪光灯已开启 · ${fmtHz(state.torchHz)}`);
+   890	          }
+   891	        } catch (error) {
+   892	          torchSwitch.checked = false;
+   893	          toast(error.message || '闪光灯开启失败');
+   894	        } finally {
+   895	          torchSwitch.disabled = false;
+   896	        }
+   897	      } else {
+   898	        await torch.stop();
+   899	      }
+   900	      torchSwitch.checked = torch.active;
+   901	      updateStageStatus();
+   902	    });
+   903	
+   904	    torchHzRange.addEventListener('input', () => {
+   905	      state.torchHz = Number(torchHzRange.value);
+   906	      torchHzOut.textContent = fmtHz(state.torchHz);
+   907	      fillRange(torchHzRange);
+   908	      if (torch.active) torch.restart(state.torchHz);
+   909	      updateStageStatus();
+   910	      persist();
+   911	    });
+   912	
+   913	    soundSwitch.addEventListener('change', async () => {
+   914	      if (soundSwitch.checked) {
+   915	        try {
+   916	          await soundEngine.start(state.soundPattern, state.volume / 100);
+   917	          toast(`警示音已开启 · ${SOUND_LABELS[state.soundPattern]}`);
+   918	        } catch (error) {
+   919	          soundSwitch.checked = false;
+   920	          toast(error.message || '音频启动失败');
+   921	        }
+   922	      } else {
+   923	        soundEngine.stop();
+   924	      }
+   925	      soundSwitch.checked = soundEngine.active;
+   926	      updateStageStatus();
+   927	    });
+   928	
+   929	    $$('#soundSeg .seg-btn').forEach((button) => {
+   930	      button.addEventListener('click', () => {
+   931	        state.soundPattern = button.dataset.sound;
+   932	        $$('#soundSeg .seg-btn').forEach((item) => {
+   933	          item.classList.toggle('is-active', item === button);
+   934	        });
+   935	        if (soundEngine.active) {
+   936	          soundEngine.start(state.soundPattern, state.volume / 100);
+   937	        }
+   938	        updateStageStatus();
+   939	        persist();
+   940	      });
+   941	    });
+   942	
+   943	    bindRange(volumeRange, volumeOut, 'volume', (value) => String(value), () => {
+   944	      if (soundEngine.active) soundEngine.setVolume(state.volume / 100);
+   945	    });
+   946	
+   947	    $$('.preset').forEach((button) => {
+   948	      button.addEventListener('click', () => {
+   949	        const preset = PRESETS[button.dataset.preset];
+   950	        if (!preset) return;
+   951	        Object.assign(state, preset);
+   952	        syncControls();
+   953	        applyStage();
+   954	        persist();
+   955	        toast(`已切换到「${button.textContent.trim()}」`);
+   956	      });
+   957	    });
+   958	
+   959	    openPanelBtn.addEventListener('click', () => {
+   960	      openPanel();
+   961	      updateStageStatus();
+   962	    });
+   963	
+   964	    $('#panelClose').addEventListener('click', closePanel);
+   965	    panelBackdrop.addEventListener('click', closePanel);
+   966	
+   967	    stage.addEventListener('click', (event) => {
+   968	      if (event.target.closest('button')) return;
+   969	      openPanel();
+   970	    });
+   971	
+   972	    startShowBtn.addEventListener('click', async () => {
+   973	      const alreadyFullscreen = Boolean(document.fullscreenElement);
+   974	      closePanel();
+   975	      await toggleFullscreen();
+   976	      acquireWakeLock();
+   977	      if (!alreadyFullscreen && document.fullscreenElement) {
+   978	        toast('演出模式 · 轻触屏幕打开控制');
+   979	      }
+   980	    });
+   981	
+   982	    document.addEventListener('fullscreenchange', updateShowButton);
+   983	
+   984	    window.addEventListener('resize', () => {
+   985	      cancelAnimationFrame(resizeFrame);
+   986	      resizeFrame = requestAnimationFrame(applyStage);
+   987	    });
+   988	
+   989	    window.addEventListener('orientationchange', () => {
+   990	      cancelAnimationFrame(resizeFrame);
+   991	      resizeFrame = requestAnimationFrame(applyStage);
+   992	    });
+   993	
+   994	    document.addEventListener('keydown', (event) => {
+   995	      if (event.key === 'Escape' && panel.classList.contains('open') && !document.fullscreenElement) {
+   996	        closePanel();
+   997	      }
+   998	    });
+   999	
+  1000	    document.addEventListener('visibilitychange', () => {
+  1001	      if (document.hidden) {
+  1002	        if (torch.active) {
+  1003	          torch.stop();
+  1004	          torchSwitch.checked = false;
+  1005	          updateStageStatus();
+  1006	          toast('页面不可见，闪光灯已自动关闭');
+  1007	        }
+  1008	      } else {
+  1009	        acquireWakeLock();
+  1010	      }
+  1011	    });
+  1012	
+  1013	    window.addEventListener('pagehide', () => {
+  1014	      if (torch.active) torch.stop();
+  1015	    });
+  1016	
+  1017	    updateShowButton();
+  1018	  }
+  1019	
+  1020	  /* ---------- Boot ---------- */
+  1021	
+  1022	  function registerServiceWorker() {
+  1023	    if (!('serviceWorker' in navigator)) return;
+  1024	    if (!/^https?:$/.test(window.location.protocol)) return;
+  1025	    window.addEventListener('load', () => {
+  1026	      navigator.serviceWorker.register('sw.js').catch(() => {
+  1027	        /* offline caching is optional */
+  1028	      });
+  1029	    });
+  1030	  }
+  1031	
+  1032	  loadState();
+  1033	  syncControls();
+  1034	  applyStage();
+  1035	  bindEvents();
+  1036	  registerServiceWorker();
+  1037	  acquireWakeLock();
+  1038	})();
