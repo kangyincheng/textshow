@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>计算机软件著作权登记申请表 - 闪闪发光 APP</title>
+<style>
+  @page { size: A4; margin: 15mm 12mm; }
+  body {
+    font-family: "Noto Sans CJK SC", "WenQuanYi Micro Hei", "SimSun", "宋体", serif;
+    font-size: 11pt;
+    line-height: 1.7;
+    color: #1a1a1a;
+    background: #fff;
+    margin: 0;
+    padding: 0;
+  }
+  h1 {
+    text-align: center;
+    font-size: 18pt;
+    margin: 4mm 0 2mm;
+    letter-spacing: 2mm;
+    border-bottom: 2.5pt double #333;
+    padding-bottom: 3mm;
+  }
+  .sub {
+    text-align: center;
+    font-size: 10pt;
+    color: #555;
+    margin-bottom: 5mm;
+  }
+  h2 {
+    font-size: 12pt;
+    background: #1a3a6b;
+    color: #fff;
+    padding: 2mm 4mm;
+    margin: 5mm 0 3mm;
+    border-radius: 1mm;
+    border-left: 1mm solid #1a3a6b;
+  }
+  .grid {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 2mm;
+  }
+  .grid td {
+    border: 0.5pt solid #999;
+    padding: 2mm 3mm;
+    vertical-align: top;
+  }
+  .grid td.label {
+    width: 28%;
+    background: #f0f4fa;
+    font-weight: bold;
+    color: #1a3a6b;
+    font-size: 10pt;
+  }
+  .grid td.val {
+    font-size: 11pt;
+    min-height: 6mm;
+  }
+  .grid td.val.text {
+    min-height: 20mm;
+  }
+  .check {
+    display: inline-block;
+    margin-right: 5mm;
+    font-size: 11pt;
+  }
+  .check::before {
+    content: "□ ";
+  }
+  .check.checked::before {
+    content: "☑ ";
+    font-weight: bold;
+    color: #1a3a6b;
+  }
+  .sign-area {
+    border: 0.5pt dashed #888;
+    padding: 4mm;
+    margin: 3mm 0;
+    min-height: 28mm;
+  }
+  .sign-area .tip {
+    font-size: 9pt;
+    color: #888;
+    margin-bottom: 2mm;
+  }
+  .sign-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10pt;
+    color: #555;
+  }
+  .sign-line .slot {
+    border-bottom: 0.5pt solid #333;
+    display: inline-block;
+    min-width: 35mm;
+    height: 10mm;
+    line-height: 10mm;
+    text-align: center;
+    color: #999;
+    font-style: italic;
+  }
+  .page-break {
+    page-break-before: always;
+  }
+  .foot {
+    text-align: center;
+    font-size: 9pt;
+    color: #777;
+    margin-top: 4mm;
+    padding-top: 2mm;
+    border-top: 0.5pt solid #ccc;
+  }
+  .box {
+    display: inline-block;
+    width: 3mm;
+    height: 3mm;
+    border: 0.8pt solid #333;
+    text-align: center;
+    font-size: 10pt;
+    line-height: 3mm;
+    margin-right: 1mm;
+  }
+  .box.checked::after {
+    content: "✓";
+    color: #1a3a6b;
+  }
+  .row { margin: 1.5mm 0; }
+  .note {
+    font-size: 9pt;
+    color: #777;
+    padding: 1mm 2mm;
+    background: #fffbe6;
+    border-left: 1mm solid #d4a60a;
+    margin: 2mm 0;
+  }
+  .two-col { display: flex; gap: 3mm; }
+  .two-col > * { flex: 1; }
+</style>
+</head>
+<body>
+
+<h1>计算机软件著作权登记申请表</h1>
+<div class="sub">（本表格所有项目均应如实填写 · 提交前请通读一遍 · 康银成 预填版 · 2026-11-15）</div>
+
+<!-- ============ 1. 软件基本信息 ============ -->
+<h2>一、软件基本信息</h2>
+
+<table class="grid">
+  <tr><td class="label">软件全称</td>
+      <td class="val">闪闪发光 APP</td></tr>
+  <tr><td class="label">软件简称（无则留空）</td>
+      <td class="val">闪闪发光</td></tr>
+  <tr><td class="label">版本号</td>
+      <td class="val">V1.0　<span style="color:#999;font-size:9pt">（鉴别材料页眉版本号保持一致）</span></td></tr>
+  <tr><td class="label">软件作品说明</td>
+      <td class="val">
+        <span class="check checked">原创软件（首次登记）</span><br>
+        <!-- 如有修改过旧版，改为：<span class="check checked">修改</span> 并填原登记号 -->
+      </td></tr>
+  <tr><td class="label">开发完成日期</td>
+      <td class="val">2026 年 10 月 31 日</td></tr>
+  <tr><td class="label">发表状态</td>
+      <td class="val">
+        <span class="check checked">未发表</span>　
+        <span class="check">已发表（如已上线则选此项并填日期/地点）</span><br>
+        <span style="color:#999;font-size:9pt">※ 未发表不影响权利归属，首次公之于众时起算保护期</span>
+      </td></tr>
+  <tr><td class="label">开发方式</td>
+      <td class="val">
+        <span class="check checked">单独开发</span>　
+        <span class="check">合作开发</span>　
+        <span class="check">委托开发</span>　
+        <span class="check">下达任务开发</span>
+      </td></tr>
+</table>
+
+<!-- ============ 2. 著作权人 ============ -->
+<h2>二、著作权人（康银成）</h2>
+
+<table class="grid">
+  <tr><td class="label">著作权人姓名或名称</td>
+      <td class="val">康银成</td></tr>
+  <tr><td class="label">著作权人类别</td>
+      <td class="val">
+        <span class="check checked">自然人</span>　
+        <span class="check">法人</span>　
+        <span class="check">非法人组织</span>　
+        <span class="check">其他</span>
+      </td></tr>
+  <tr><td class="label">证件类型</td>
+      <td class="val">
+        <span class="check checked">身份证</span>　
+        <span class="check">护照</span>　
+        <span class="check">军官证</span>　
+        <span class="check">营业执照</span>
+      </td></tr>
+  <tr><td class="label">证件号码</td>
+      <td class="val"><span style="color:#c00">■■■■■■■■■■■■■■■■■■</span>　<span style="color:#999;font-size:9pt">※ 提交前请手动填写真实身份证号，或在身份证扫描件上可见</span></td></tr>
+  <tr><td class="label">国籍</td>
+      <td class="val">中国</td></tr>
+  <tr><td class="label">省份 / 城市</td>
+      <td class="val">浙江省 / 嘉兴市</td></tr>
+  <tr><td class="label">详细地址</td>
+      <td class="val">浙江省嘉兴市秀洲区木桥港路 500 号滨江园 4-604 室</td></tr>
+  <tr><td class="label">联系电话</td>
+      <td class="val">13967332389</td></tr>
+  <tr><td class="label">电子邮箱</td>
+      <td class="val">513916139@qq.com</td></tr>
+</table>
+
+<!-- ============ 3. 权利说明 ============ -->
+<h2>三、权利说明</h2>
+
+<table class="grid">
+  <tr><td class="label">权利取得方式</td>
+      <td class="val">
+        <span class="check checked">原始取得（独立开发获得著作权）</span><br>
+        <!-- 如为二手取得，改为下列之一：
+        <span class="check">继受取得 - 受让（附转让合同）</span>　
+        <span class="check">继受取得 - 继承（附死亡证明/遗嘱）</span>　
+        <span class="check">继受取得 - 承受（附企业变更文件）</span>
+        -->
+      </td></tr>
+  <tr><td class="label">权利范围</td>
+      <td class="val">
+        <span class="check checked">全部权利</span><br>
+        <!-- 部分权利时写：
+        <span class="check">部分权利，具体包括：[请注明，如复制权/发行权/信息网络传播权……]</span>
+        -->
+      </td></tr>
+  <tr><td class="label">原登记号（如有）</td>
+      <td class="val">本软件为首次登记，无原登记号</td></tr>
+</table>
+
+<!-- ============ 4. 软件鉴别材料 ============ -->
+<h2>四、软件鉴别材料</h2>
+
+<table class="grid">
+  <tr><td class="label">源程序交存方式</td>
+      <td class="val">
+        <span class="check checked">一般交存：前 30 页 + 后 30 页（不足 60 页全部提交）</span>
+        <div class="note">本软件源代码共 51 页（2523 行），不足 60 页，故全部提交。每页 50 行，符合版权中心要求。</div>
+      </td></tr>
+  <tr><td class="label">文档交存方式</td>
+      <td class="val">
+        <span class="check checked">一般交存：软件说明书前 30 页 + 后 30 页（不足全部提交）</span>
+        <div class="note">本说明书共 7 页，全部提交。每页 ≥30 行。</div>
+      </td></tr>
+</table>
+
+<!-- ============ 5. 软件功能和技术特点 ============ -->
+<h2>五、软件功能和技术特点</h2>
+
+<table class="grid">
+  <tr><td class="label" style="width:20%">硬件环境</td>
+      <td class="val">
+        开发机：个人笔记本电脑，Intel 酷睿 i7 及以上，内存 ≥8GB，硬盘 ≥100GB 可用<br>
+        运行环境：Android 7.0（API 24）及以上手机，带摄像头闪光灯、扬声器
+      </td></tr>
+  <tr><td class="label">软件环境</td>
+      <td class="val">
+        开发环境：Windows 10/11 或 macOS / Linux，VS Code 编辑器，Node.js 18+（仅用于打包）<br>
+        运行系统：Android 原生（通过 Capacitor 打包为 APK），无任何后端依赖、无网络要求
+      </td></tr>
+  <tr><td class="label">编程语言</td>
+      <td class="val">HTML5、CSS3、JavaScript ES2022（纯原生，无任何框架依赖）</td></tr>
+  <tr><td class="label">源程序量（行数）</td>
+      <td class="val">约 2500 行（含 HTML / CSS / JS / manifest / Service Worker 全部核心文件）</td></tr>
+  <tr><td class="label">主要功能和技术特点</td>
+      <td class="val text">
+        <b>开发目的：</b>面向演唱会应援、车辆故障临时警示、户外活动标识等场景的移动端荧光字牌工具。<br>
+        <b>面向领域：</b>文化娱乐（演唱会应援）、交通应急（车辆故障警示）、个人安全（夜间信号）。<br>
+        <b>主要功能：</b>
+        ① 自定义发光文字：5 种字体，字号自动适配屏幕；
+        ② 文字特效：霓虹发光、闪光、跳动、走马灯、彩虹渐变可自由组合；
+        ③ 背景频闪：整屏 0.5–12Hz 频闪 / 三格警灯模式（红-琥珀-白依次点亮，独立描边光晕）；
+        ④ 摄像头闪光灯频闪（0.5–20Hz 可调）；
+        ⑤ 4 种民用高频警示音（避开警用频率，2000–4000Hz 安全频段）；
+        ⑥ 演出模式：一键全屏、屏幕常亮、横屏自适应。<br>
+        <b>技术特点：</b>
+        ① 纯前端实现，零后端依赖，纯本地运行；
+        ② APK 仅 1.1MB，运行时内存 <50MB；
+        ③ CSS 状态机驱动三格警灯，60fps 无性能损耗；
+        ④ Web Audio API 合成警示音，DynamicsCompressor 防破音；
+        ⑤ Service Worker 离线缓存，飞行模式可运行；
+        ⑥ vmin 自适应布局，不同屏幕尺寸自动适配。
+      </td></tr>
+</table>
+
+<!-- ============ 6. 申请办理方式 ============ -->
+<div class="page-break"></div>
+<h2>六、申请办理方式</h2>
+
+<table class="grid">
+  <tr><td class="label">办理方式</td>
+      <td class="val">
+        <span class="check checked">著作权人自行申请办理</span>　
+        <span class="check">委托代理机构办理</span>
+      </td></tr>
+  <tr><td class="label">申请人</td>
+      <td class="val">
+        姓名/名称：康银成　｜　证件号：<span style="color:#c00">■■■■■■■■■■■■■■■■■■</span>
+      </td></tr>
+  <tr><td class="label">代理人（如有）</td>
+      <td class="val">不适用</td></tr>
+</table>
+
+<!-- ============ 7. 申请人签章 ============ -->
+<h2>七、申请人签章 / 承诺</h2>
+
+<div class="sign-area">
+  <div class="tip">
+    ▶ 以下承诺条款已阅读理解，本人/本单位保证所提交材料真实有效，如有虚假，愿承担相应法律责任。<br>
+    ▶ 提交前请再次核对：① 著作权人身份证号已填 ② 源代码 PDF 页眉与版本号一致 ③ 说明书 PDF 著作权人正确。
+  </div>
+
+  <div style="margin:4mm 0;">
+    <div class="row"><span class="box checked"></span> 申请人承诺所提供信息真实、准确、完整，不存在虚假记载或误导性陈述。</div>
+    <div class="row"><span class="box checked"></span> 申请人承诺本软件为原创，不侵犯他人知识产权。</div>
+    <div class="row"><span class="box checked"></span> 申请人已知晓《计算机软件保护条例》相关规定。</div>
+  </div>
+
+  <table class="grid" style="margin-top:6mm">
+    <tr><td class="label" style="width:30%">申请人签字或盖章</td>
+        <td class="val" style="height:35mm; padding:6mm;">
+          <div style="text-align:right; padding-right:15mm;">
+            （自然人本人签字）<br>
+            <div style="height:20mm;"></div>
+            <span style="color:#999;font-size:10pt">签字/画押：</span> <span class="sign-line"><span class="slot">康银成</span></span>
+          </div>
+        </td></tr>
+    <tr><td class="label">申请日期</td>
+        <td class="val" style="padding:5mm">
+          <span style="color:#999;font-size:10pt">提交当日填写</span>：　　年　　月　　日
+          <span style="float:right">（本表生成日期：2026-11-15）</span>
+        </td></tr>
+  </table>
+</div>
+
+<div class="foot">
+  本页为申请表第 1 页，共 2 页　·　申请人：康银成　·　软件名称：闪闪发光 APP V1.0
+</div>
+
+<!-- ============ 签章确认页 ============ -->
+<div class="page-break"></div>
+
+<h1 style="border-bottom:2.5pt double #333">签章确认页</h1>
+<div class="sub">（请在提交前通读一遍并签字确认，此页也需上传扫描件）</div>
+
+<div style="padding:3mm 5mm; font-size:10.5pt; text-indent:2em; line-height:2;">
+  本人康银成，在此郑重声明：<br><br>
+  一、本次向中国版权保护中心提交的《计算机软件著作权登记申请表》及全部申请材料（包括源代码、软件说明书、身份证扫描件等），均为本人真实意思表示，内容真实、准确、完整，不存在任何虚假陈述或隐瞒。<br><br>
+  二、本软件「闪闪发光 APP V1.0」为本人独立开发完成的原创软件，不侵犯任何自然人、法人或其他组织的知识产权和其他合法权益。<br><br>
+  三、本人已认真阅读并理解《计算机软件保护条例》《计算机软件著作权登记办法》及相关法律法规，清楚知晓申请登记后的权利义务和法律后果。<br><br>
+  四、本人愿意对因提供虚假材料或侵犯他人权益所引起的一切法律责任承担责任。<br><br>
+  以上声明，特此确认。
+</div>
+
+<table class="grid" style="margin-top:8mm">
+  <tr><td class="label" style="width:30%">申请人签字</td>
+      <td class="val" style="height:35mm; padding:6mm;">
+        <div style="text-align:right; padding-right:15mm;">
+          <span style="color:#999;font-size:10pt">（自然人本人签字，签字须与身份证姓名一致）</span><br><br><br>
+          <b>康银成</b>
+        </div>
+      </td></tr>
+  <tr><td class="label">申请日期</td>
+      <td class="val" style="padding:5mm">
+        <span style="color:#999;font-size:10pt">提交当日填写</span>：　　年　　月　　日
+      </td></tr>
+  <tr><td class="label">联系电话</td>
+      <td class="val">13967332389</td></tr>
+  <tr><td class="label">电子邮箱</td>
+      <td class="val">513916139@qq.com</td></tr>
+</table>
+
+<div style="margin-top:10mm; text-align:center; font-size:9pt; color:#555;">
+  ═══════════════════════════════════════════════════════<br>
+  中国版权保护中心在线登记系统可自行生成电子申请表<br>
+  本模板为「预填参考」，请在在线系统中逐项对应录入后再提交<br>
+  ═══════════════════════════════════════════════════════
+</div>
+
+<div class="foot">
+  本页为申请表第 2 页，共 2 页　·　声明签章页　·　申请人：康银成
+</div>
+
+</body>
+</html>
